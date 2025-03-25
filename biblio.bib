@@ -1,0 +1,74 @@
+@InProceedings{directkeysidh,
+author="Maino, Luciano
+and Martindale, Chloe
+and Panny, Lorenz
+and Pope, Giacomo
+and Wesolowski, Benjamin",
+editor="Hazay, Carmit
+and Stam, Martijn",
+title="A Direct Key Recovery Attack on SIDH",
+booktitle="Advances in Cryptology -- EUROCRYPT 2023",
+year="2023",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="448--471",
+abstract="We present an attack on SIDH utilising isogenies between polarized products of two supersingular elliptic curves. In the case of arbitrary starting curve, our attack (discovered independently from [8]) has subexponential complexity, thus significantly reducing the security of SIDH and SIKE. When the endomorphism ring of the starting curve is known, our attack (here derived from [8]) has polynomial-time complexity assuming the generalised Riemann hypothesis. Our attack applies to any isogeny-based cryptosystem that publishes the images of points under the secret isogeny, for example S{\'e}ta [13] and B-SIDH [11]. It does not apply to CSIDH [9], CSI-FiSh [3], or SQISign [14].",
+isbn="978-3-031-30589-4"
+}
+
+@InProceedings{FESTA,
+author="Basso, Andrea
+and Maino, Luciano
+and Pope, Giacomo",
+editor="Guo, Jian
+and Steinfeld, Ron",
+title="FESTA: Fast Encryption from Supersingular Torsion Attacks",
+booktitle="Advances in Cryptology -- ASIACRYPT 2023",
+year="2023",
+publisher="Springer Nature Singapore",
+address="Singapore",
+pages="98--126",
+abstract="We introduce FESTA, an efficient isogeny-based public-key encryption (PKE) protocol based on a constructive application of the SIDH attacks.",
+isbn="978-981-99-8739-9"
+}
+@article{SIDH,
+url = {https://doi.org/10.1515/jmc-2012-0015},
+title = {Towards quantum-resistant cryptosystems from supersingular elliptic curve isogenies},
+title = {},
+author = {Luca De Feo and David Jao and Jérôme Plût},
+pages = {209--247},
+volume = {8},
+number = {3},
+journal = {Journal of Mathematical Cryptology},
+doi = {doi:10.1515/jmc-2012-0015},
+year = {2014},
+lastchecked = {2025-03-06}
+}
+@InProceedings{polyCIST,
+author="Castryck, Wouter
+and Vercauteren, Frederik",
+editor="Guo, Jian
+and Steinfeld, Ron",
+title="A Polynomial Time Attack on Instances of M-SIDH and FESTA",
+booktitle="Advances in Cryptology -- ASIACRYPT 2023",
+year="2023",
+publisher="Springer Nature Singapore",
+address="Singapore",
+pages="127--156",
+abstract="The recent devastating attacks on SIDH rely on the fact that the protocol reveals the images {\$}{\$}{\backslash}varphi (P){\$}{\$}$\phi$(P)and {\$}{\$}{\backslash}varphi (Q){\$}{\$}$\phi$(Q)of the secret isogeny {\$}{\$}{\backslash}varphi : E{\_}0{\backslash}rightarrow E{\$}{\$}$\phi$:E0{\textrightarrow}Eon a basis {\$}{\$}{\backslash}{\{}P, Q{\backslash}{\}}{\$}{\$}{\{}P,Q{\}}of the N-torsion subgroup {\$}{\$}E{\_}0[N]{\$}{\$}E0[N]where {\$}{\$}N^2 > {\backslash}deg ({\backslash}varphi ){\$}{\$}N2>deg($\phi$). To thwart this attack, two recent proposals, M-SIDH and FESTA, proceed by only revealing the images upto unknown scalars {\$}{\$}{\backslash}lambda {\_}1, {\backslash}lambda {\_}2 {\backslash}in {\backslash}mathbb {\{}Z{\}}{\_}N^{\backslash}times {\$}{\$}$\lambda$1,$\lambda$2∈ZN{\texttimes}, i.e. only {\$}{\$}{\backslash}lambda {\_}1 {\backslash}varphi (P){\$}{\$}$\lambda$1$\phi$(P)and {\$}{\$}{\backslash}lambda {\_}2 {\backslash}varphi (Q){\$}{\$}$\lambda$2$\phi$(Q)are revealed, where {\$}{\$}{\backslash}lambda {\_}1 = {\backslash}lambda {\_}2{\$}{\$}$\lambda$1=$\lambda$2for M-SIDH and {\$}{\$}{\backslash}lambda {\_}1 = {\backslash}lambda {\_}2^{\{}-1{\}}{\$}{\$}$\lambda$1=$\lambda$2-1for FESTA. Similar information is leaked in CSIDH since {\$}{\$}{\backslash}varphi {\$}{\$}$\phi$maps the eigenspaces of Frobenius on {\$}{\$}E{\_}0{\$}{\$}E0to the corresponding eigenspaces on {\$}{\$}E{\$}{\$}E.",
+isbn="978-981-99-8739-9"
+}
+
+@InProceedings{sidhpolyattack,
+author="Robert, Damien",
+editor="Hazay, Carmit
+and Stam, Martijn",
+title="Breaking SIDH in Polynomial Time",
+booktitle="Advances in Cryptology -- EUROCRYPT 2023",
+year="2023",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="472--503",
+abstract="We show that we can break SIDH in (classical) polynomial time, even with a random starting curve {\$}{\$}E{\_}0{\$}{\$}E0.",
+isbn="978-3-031-30589-4"
+}

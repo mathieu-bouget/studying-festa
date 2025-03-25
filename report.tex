@@ -1,0 +1,336 @@
+	\documentclass[11pt]{article}
+
+	\usepackage[utf8]{inputenc}
+	\usepackage[T1]{fontenc}
+	\usepackage{textcomp}
+	\usepackage{amsmath, amssymb}
+	\usepackage[english]{babel}
+	\usepackage{tikz}
+	\usepackage{tikz-cd}
+	\usepackage{nameref}
+	\newtheorem{theorem}{Theorem}
+	\tikzcdset{every label/.append style = {font = \large}}
+	%\tikzcdset{every vertice/.append style = {font = \huge}}
+
+	\author{Mathieu Bouget}
+	\title{Studying FESTA}
+
+	\begin{document}
+		\maketitle
+
+		\section{Preliminaries}
+		\section{SIDH}
+			The Supersingular Isogeny Diffie-Hellmann is a scheme derived from the usual
+			Diffie-Hellmann exchange where we have a group $G= \langle g\rangle$ and Alice choose a
+			secret integer $a$ and send $g^a$, Bob choose a secret $b$ and send $g^b$ to Alice,
+			at the end they are both able to compute $g^{ab}$ which is their shared secret.
+			There is a starting curve $E_0$, Alice chooses an isogeny $\varphi_A:E_0\to E_A$
+			and send $E_A$ to Bob who sent in the same time the curve $E_B$ he obtained
+			from the isogeny $\varphi_B:E_0\to E_B$ he had chosen before.
+			This protocol requires additionnal information because it's not as simple as the
+			case in group where the knowledge of $g^b$ and $a$ make Alice able to construct
+			$g^{ab}=(g^b)^a$.
+			Alice knows $\varphi_A$ and  $E_B$ and would want to create something like
+			$\varphi_A':E_B\to E_{AB}$
+
+			%TODO sidh description
+			\subsection{High-level}
+			Before going into more details about the mathematical tools (2-dimension isogenies)
+			and strategies to break a generic SIDH instance, I introduce a generic condition
+			on the degree of the secret isogeny and the torsion of $E_0$ that is sufficient
+			to find $\varphi$.
+			\begin{theorem}{\cite{sidhpolyattack}}
+				Let $\varphi:E_0 \to E$ be a secret degree disogeny (where $d$
+				is known) and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
+				where $N$ and $d$ are assumed smooth and coprime, and $N^2 > 4d$. Let $\mathbb{F}_q$ be the
+				smallest field over which $E_0[N],E_0[d]$ and $\varphi$ are defined, then the kernel of
+				$\varphi$ can be computed in a polynomial number of operations in $\mathbb{F}_q$.
+			\end{theorem}
+			%TODO verify (see paper)
+			In fact this attack require only $N^2>d$ to run but may return an ambiguous result
+			in this case. Intuitively, the larger $N$ the more information is given about
+			the behaviour of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
+			so is difficult to recover from torsion points.
+			$\varphi$.
+			\subsection{Mathematical tools}
+			Giving the images of torsion points was considered safe until a mathematical result based
+			on elliptic curve product and higher-dimensionnal isogenies gave ways to recover
+			the secret isogeny in classical polynomial-time.
+			We recall here a result that make torsion-point attacks possibles.
+			%TODO trouver formulation du thm
+			\begin{theorem}
+				\label{thm:twoiso}
+				Let $E_0$, $E_1$ and $2$ be three elliptic curves definied over
+				$\overline{\mathbb{F}}_p$ such that there exist two isogenies
+				$\varphi_{N_1}:E_0\to E_1$ and $\varphi_{N_2}:E_0\to E_2$ of coprime degrees
+				$\deg(\varphi_{N_1})=N_1$ and $\deg(\varphi_{N_2})=N_2$. Then, the subgroup
+				$$\{([N_2]\varphi_{N_1}\times[N_1]\varphi_{N_2})\circ(P,P)~|~ P\in E_0[N_1+N_2]\}$$
+				is the kernel of a $(N_1+N_2,N_1+N_2)$-polarised isogeny $\Phi$
+				having product codomain $E_0\times F$ and matrix form
+				$$
+				\begin{pmatrix}\widehat\varphi_{N_1} & -\widehat\varphi_{N_2}
+				\\ g_{N_2} & \widehat{g}_{N_1} \end{pmatrix}$$
+				where $g_{N_i}$ are $N_i$-isogenies such that the following diagram commutes
+
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAFEB9YkAX1PSZc+QigCM5KrUYs2XAEx8BIDNjwEiEsVPrNWiEADElgtSKJlt1XbINcxfKTCgBzeEVAAzAE4QAtkhkIDgQSBLSemwAOlH03mgAFlicwABynPK8JiA+-oHUIUgAzNYy+iAxcYnJaZxiWdQMdABGMAwACkLqoiDeWC4JONm5AYglwaGI4TbllXTxScO+o-IFk9NlbC4p6fUgjS1tnWYaBn0DQ-xey8VrSKsRtiDbtZn7IE2tHV3mZ-2Djl4QA
+				\begin{center}\begin{tikzcd}[sep = 5em]
+E_0 \arrow[r, "\varphi_{N_2}"] \arrow[d, "\varphi_{N_1}"'] & E_2                     \\
+E_1 \arrow[ru, "\varphi"] \arrow[r, "g_{N_2}"']            & F \arrow[u, "g_{N_1}"']
+\end{tikzcd}\end{center}
+			\end{theorem}
+			
+			
+			In \cite{directkeysidh} and in attacks on SIDH, discussion are about finding an
+			isogeny $\varphi_f$ in order to use this theorem, once the isogeny has been found
+			we juste need to evaluate a two-dimensions isogeny in order to recover the kernel
+			of the secret isogeny $\varphi_A$.
+
+			
+		\section{FESTA}
+		In 2023, a public key encryption scheme based on the SIDH attack was introduced
+		in \cite{FESTA} and relies on a trapdoor function.
+		\subsection{High-level description}
+		The public parameters are a supersingular elliptic curve $E_0$ definied over
+		$\mathbb{F}_{p^2}$ and a basis $\mathcal B_{E_0[2^b]}=(P_b,Q_b)$ of the $2^b$-torsion
+		of $E_0$.
+
+		The key generation consists in the choice of a secret isogeny $\varphi_A$ from 
+		$E_0$ to a curve $E_A$, as in SIDH some additionnal information is given about
+		$\varphi_A$. Since the knowledge of $\varphi_A|_{E[2^b]}$ (ie
+		$(\varphi_A(P_b),\varphi_A(Q_b))$ lets an attacker able to recover $\varphi_A$,
+		the information about behaviour of  $\varphi_A$ on the  $2^b$-torsion is scaled
+		with a matrix $\mathbf A$ which belon to the trapdoor with $\varphi_A$.
+		Thus, the trapdoor is $(\varphi_A,\mathbf A)$ and the public key is 
+		$\mathtt{pk}=(E_A,R_A,S_A)$ where
+	\[
+		\begin{pmatrix} R_A \\ S_A \end{pmatrix} = \mathbf A \cdot \varphi_A
+	\begin{pmatrix} P_b \\ Q_b \end{pmatrix} 	
+	\] 	
+
+	% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAFEB9YkAX1PSZc+QigCM5KrUYs2XAIJ8BIDNjwEiZMVPrNWiDpzFLBakUQnbqu2Qa4AmPlJhQA5vCKgAZgCcIAWyQyEBwIJAlpPTYAHWj6HzQACyxORX5vP0DECNCkAGZrGX0QWPiklMd0kF8AoOpcxHtCqINSugTkoydeIA
+	\begin{center}
+	\begin{tikzcd}[sep = 5em]
+E_0 \arrow[r, "\varphi_A"] \arrow[d, "\varphi_1"] & E_A \arrow[d, "\varphi_2"] \\
+E_1                                               & E_2
+\end{tikzcd}
+\end{center}
+
+		\paragraph{Evaluation} The inputs of the evaluation function are two isogeny
+		$\varphi_1:E_0\to E_1$ and $\varphi_2:E_A\to E_2$ plus a scaling matrix $\mathbf B$.
+		Using a representation of the isogenies using a generator of their kernel described
+		in a deterministicaly generated basis, the domain of $f_\mathtt{pk}$ is
+		$$\mathbb{Z}/d_1\mathbb{Z}\times\mathbb{Z}/d_2\mathbb{Z}\times\mathcal M_b$$
+		where $\mathcal M_b$ is the set of scaling matrices.
+		The output of the function are curves $E_1$ and $E_2$ plus additionnal information
+		about $\varphi_1$ and $\varphi_2$, that is some torsion points scaled with $\mathbf B$.
+		The output is $(E_1,R_1,S_1,E_2,R_2,S_2)$ where
+		\[
+		\begin{pmatrix} R_1 \\ S_1 \end{pmatrix} = \mathbf B \cdot \varphi_1 
+		\begin{pmatrix} P_b \\ Q_b \end{pmatrix}\quad\quad
+		\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} = \mathbf B \cdot\varphi_2
+		\begin{pmatrix} R_A \\ S_A \end{pmatrix} = \mathbf B\cdot\varphi_2\cdot\mathbf A
+		\cdot\varphi_A \begin{pmatrix} P_b \\ Q_b \end{pmatrix} 
+		\] 
+		\paragraph{Inversion} We have
+		\begin{eqnarray*}
+			(\varphi_2\circ\varphi_A\circ\widehat\varphi_1)\begin{pmatrix}R_1\\S_1\end{pmatrix} 
+		&=&\varphi_2\circ\varphi_A\circ\widehat\varphi_1\cdot\mathbf B\varphi_1
+		\begin{pmatrix} P_b \\ Q_b \end{pmatrix}  \\
+		&=& \mathbf B \cdot\varphi_2\circ\varphi_A\circ[\widehat\varphi_1\circ\varphi_1]
+		\begin{pmatrix} P_b \\ Q_b \end{pmatrix} \\
+		&=&[d_1] \mathbf B\cdot\varphi_2\circ\varphi_A\begin{pmatrix} P_b \\ Q_b \end{pmatrix} \\
+		&=&[d_1] \mathbf{BA^{-1}}\cdot\varphi_2\circ\mathbf A\varphi_A
+		\begin{pmatrix} P_b \\ Q_b \end{pmatrix} \\
+		&=&[d_1] \mathbf{BA^{-1}}\cdot\varphi_2
+		\begin{pmatrix} R_A \\ S_A \end{pmatrix} \\
+		&=&[d_1] \mathbf{BA^{-1}}\cdot\mathbf{B}
+		\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} \\
+		&=&[d_1] \mathbf{A^{-1}}\cdot\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} \\
+	\end{eqnarray*}
+	Then we can recover the isogeny $\psi=\varphi_2\circ\varphi_A\circ\widehat\varphi_1$
+	using the SIDH attack, extraction of isogenies  $\varphi_1$ and $\varphi_2$ follows
+	(and $\mathbf B$) using the knowledge of $\varphi_A$.
+
+	\subsection{Low-level description}
+
+	A pure SIDH on $\psi$ would be too expensive to be used in a decryption algorithm so
+	there is a specific construction of $\varphi_A$ during the setup phase in order to make
+	the attack more efficient. More precisely, there will not be any research phase of a
+	suitable isogeny to construct the 2-dimension isogeny as it is the case in the general
+	SIDH attack. During the setup, two isogenies are actually generated such that their
+	degrees fill the equality $m_1^2d_{A,1}d_1+m_2^2d_{A,2}d_2=2^b$ for some $m_1,m_2,b\in\mathbb{Z}$
+	and from these we compute $\varphi_A$.
+	 \[
+		 \varphi_A = \varphi_{A,2}\circ\varphi_{A,1}
+	\] 
+	Note that no information about $\varphi_{A,1}$, $\varphi_{A,2}$ (such at $\varphi_{A,1}(P_b)$)
+	is public so it doesn't change the security of the protocol.
+	To recover $\varphi_1$ and $\varphi_2$ we can use the Theorem \ref{thm:twoiso} with
+	$\varphi_{N_1}=[m_1]\circ\varphi_1\circ\widehat\varphi_{A,1}$ and
+	$\varphi_{N_2}=[m_2]\circ\varphi_2\circ\varphi_{A,2}$.
+
+	\begin{center}
+		% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAB128HZgBRAL4B9AIIgBpdJlz5CKAIzkqtRizZ8hAJnGSQGbHgJEy85fWatEIDfJ1SDsootPVzaqwDFxymFADm8ESgAGYAThAAtkhkIDgQSIoqFmyc9KFoABZYQsAAcloCdiBhkdHUcUiarqqWHOxpmdl5QvKF1Ax0AEYwDAAK0oZyIKFYfhk4RSVRiFWx8YgAzNXJVn45+ZqFEiHh00tzCcvuIGvNrSDtXT39DkZWI2MTAhQCQA
+		\begin{tikzcd}[sep = 5em]
+\tilde{E}_A \arrow[r, "\varphi_{N_2}"] \arrow[d, "\varphi_{N_1}"'] & E_2                     \\
+E_1 \arrow[r, "g_{N_2}"']                                           & F \arrow[u, "g_{N_1}"']
+\end{tikzcd}
+	\end{center}
+
+	We have $N_1 + N_2 = m_1^2d_1d_{A,1} + m_2^2d_2d_{A,2}=2^b$ so $\tilde{E}_A[N_1+N_2]$ is
+	the $2^b$-torsion of $\tilde E_A$. We have, with $P'_b=\varphi_{A,1}(P_b)$ and 
+	$Q'_b=\varphi_{A,1}(Q_b)$.
+	\begin{eqnarray*}
+		[N_2]\varphi_{N_1}(P'_b) & = & [N_2][m_1]\circ\varphi_1\circ\tilde\varphi_{A,1}(P'_b) \\
+														 & = & [N_2][m_1]\circ\varphi_1\circ\tilde\varphi_{A,1}
+														 \circ\varphi_{A,1}(P_b) \\
+														 & = & [N_2][m_1][d_{A,1}]\circ\varphi_1(P_b) \\
+														 & = & [m_2^2d_{A,2}d_2][m_1][d_{A,1}]\circ\varphi_1(P_b) \\
+														 & = & [m_2m_1d_{A,1}][m_2d_{A,2}d_2]\circ\varphi_1(P_b) \\
+		N_1\varphi_{N_2}(P'_b) & = & [N_1][m_2]\circ\varphi_2\circ\varphi_{A,2}(P'_b) \\
+													 & = & [N_1][m_2]\circ\varphi_2\circ\varphi_{A,2}\circ\varphi_{A,1}(P_b) \\
+													 & = & [N_1][m_2]\circ\varphi_2\circ\varphi_A(P_b) \\
+													 & = & [N_1][m_2]\circ\varphi_2\circ\varphi_A(P_b) \\
+														& = & [m_1^2d_{A,1}d_1][m_2]\circ\varphi_2\circ\varphi_A(P_b) \\
+														& = & [m_2m_1d_{A,1}][m_1d_1]\circ\varphi_2\circ\varphi_A(P_b) 
+	\end{eqnarray*}
+	The know the $\varphi_2\circ\varphi_A(P_b)$ and $\varphi_1(P_b)$ using $\mathbf A^{-1}$
+	up to the matrix $\mathbf B$ but
+	it's sufficient to have the whole kernel of $\phi$ the 2-isogeny which has matrix form :
+	$$\begin{pmatrix}
+		 \varphi_{N_1} & \widehat\varphi_{N_2} \\
+		 \_ & \_ \end{pmatrix}
+	$$
+
+	%connaissance des degrés suffisantes ?
+	
+
+	\section{Attacks}
+	The security of FESTA is based on the hardness of isogeny interpolation when the
+	images of the torsion are scaled with some matrix. Breaking this problem would breaks
+	the entire protocol, however there is a stronger assumption that is made in FESTA which
+	is that there are two interpolation with the same scaling matrix.
+
+	\subsection{Computational isogeny with scaled-torsion problem}
+	Even if FESTA relies on a stronges assumption that this problem, there is a major intrest
+	in sutdying current strategies used to break a CIST instance. I briefly introduce
+	the one provided in \cite{polyCIST}.
+	
+	We want to recover a secret isogeny $\varphi:E_0\to E$ of known degree $d$. We are given
+	the points $S,T\in E[N]$ such that
+	\[
+		\begin{pmatrix} S \\ T \end{pmatrix} = \mathbf A\cdot \varphi \begin{pmatrix} P \\ Q \end{pmatrix}
+	\] 
+	where $(P,Q)$ is a basis of  $E_0[N]$ the $N$-torsion of $E_0$ and  $\mathbf A$ a secret
+	matrix.
+
+	
+	A direct "SIDH" attack on $\varphi$ isn't possible here because of the scaling matrix
+	$\mathbf A$. So an idea is to attack another isogeny that doesn't contain $\mathbf A$
+	but still discloses information about $\varphi$.
+
+	For instance, if $\omega$ is an endomorphism of $E_0$,
+	then recovering isogeny $\psi = \varphi \circ \omega \circ \widehat\varphi$
+	could give clues on $\varphi$. Intuitively, the presence of $\varphi$ and
+	$\widehat\varphi$ corresponds to an application of $\mathbf A$ and then $\mathbf A^{-1}$
+	so it should cancel the scaling as long as $\omega$ "commute" with this matrix.
+	More formally, we require that the endomorphism $\omega$ acting on $E_0[B]$ as a matrix
+	 $\mathbf M$ in the basis $(P,Q)$ that commutes with $\mathbf A$.
+\[
+	\omega \begin{pmatrix} P \\ Q\end{pmatrix} = \mathbf M \begin{pmatrix} P \\ Q \end{pmatrix}
+\] 
+This way we have, denoting $w$ the degree of $\omega$ :
+	\begin{eqnarray*}
+		\varphi\circ\omega\circ\widehat\varphi \begin{pmatrix} S \\ T \end{pmatrix}
+		&=& \varphi\circ\omega\circ [d]  \mathbf A \begin{pmatrix} P \\ Q \end{pmatrix} \\
+		&=& [d]\mathbf A \circ \varphi\circ\omega \begin{pmatrix} P \\ Q \end{pmatrix} \\
+		&=& [d]\mathbf{AM} \circ \varphi \begin{pmatrix} P \\ Q \end{pmatrix} \\
+		&=& [d]\mathbf{AMA^{-1}}  \begin{pmatrix} S \\ T \end{pmatrix} \\
+		&=& [d]\mathbf{M}  \begin{pmatrix} S \\ T \end{pmatrix} \\
+	\end{eqnarray*}
+	This equality implies that it is possible to get the images of $\varphi\circ\omega
+	\circ\widehat\varphi$ on the basis $(P,Q)$ of the $N$-torsion from the only knowledge
+	of the matrix $\mathbf M$ and the points $(S,T)$. Then, if the degree of this isogeny
+	is small enough (in fact $N^2>wd^2$), it is possible to recover it completly using SIDH attack. 
+	However, recovering this isogeny
+	does not always give meaningfull information about $\varphi$. Let's take the trivial
+	example of $\omega=\mathrm{Id}_{E_0}$, the isogeny $\varphi\circ\omega\circ\widehat\varphi$
+	is in this case $[d]$ which doesn't contain any additionnal information on $\varphi$.
+
+	\begin{center}
+		% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAFEB9YkAX1PSZc+QijIBGKrUYs27AOTc+UmFADm8IqABmAJwgBbJGRA4IScdXrNWiEAB179XWgAWWENTjvtOC9QY6ACMYBgAFITwCNl0sNVc-fh19I0QTM2MAiAg0InEADjJtRjgYKUCQ8MiRGLiEz2kbNkdDGDU6PgEQPUN-U3M0rx8-REtG2TtHAHcsWFc6HEdnNw8A4NCI7CjREFj4xIpeIA
+		\begin{tikzcd}[sep=5em]
+E_0 \arrow[d, "\varphi"', shift right] \arrow["\omega"', loop, distance=2em, in=125, out=55] \\
+E'_0 \arrow[u, "\widehat\varphi"', shift right]
+\end{tikzcd}
+\end{center}
+
+We need to controll the degree of $\omega$ in order to apply the SIDH attack. There is an
+improvement of this technique that reduces the degree in some cases. We now set $\omega$ to
+be an isogeny from $E_0$ to some other curve $E$ and take another isogeny $\sigma_0:E_0\to E$.
+We controll the endomorphism $\omega'=\widehat\sigma_0\circ\omega$ by the matrix $\mathbf M$ :
+\[
+	(\widehat\sigma_0\circ\omega) \begin{pmatrix} P \\ Q\end{pmatrix} = \mathbf M \begin{pmatrix} P \\ Q \end{pmatrix}
+\] 
+The diagram is now
+\begin{center}
+% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZARgBoAGAXVJADcBDAGwFcYkQBRAfXJAF9S6TLnyEUZYtTpNW7DgHIe-QSAzY8BIuQpSGLNok78pMKAHN4RUADMAThAC2SbSBwQkZafvYAdHw1s0AAssEBo4EOscDxpGegAjGEYABWENMRBbLDMg6IEbeydETzdncMjo4po9WUM-AHcsWCD6HD8A4NDYhKTU9VF2LJy8lTtHMtd3RAAmapkDED9HGDN6MJBEsCgkAGZyfJAxopdSmZpN7cQAWj257zqfbDMHeiVuxJS0gcMh3OM+IA
+	\begin{tikzcd}[sep=5em]
+E & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
+  & E'_0 \arrow[u, "\widehat\varphi"', shift right]
+\end{tikzcd}
+\end{center}
+
+The required inequality for using SIDH attack on $\psi$ is $N^2>swd^2$ where $s$ is the degree
+of $\sigma_0$. For the moment it corresponds to the previous one since  $w'=ws$, but the point
+is that the knowledge of the pushforward of $\sigma_0$ through $\varphi$ eliminates $s$.
+Let assume we know $\sigma$ the pushforward of $\sigma_0$ through $\varphi$, that is the isogeny
+that has kernel $\varphi(\mathrm{Ker}\sigma_0)$ going from $E'_0$ to another curve $E'$
+and that effectively computable in some situation.
+To delete the $s$ of the conditon we need to eliminate $\sigma_0$ in $\psi = \varphi\circ\widehat
+\sigma_0\circ\omega\circ\widehat\varphi$ so we let $\psi=\varphi'\circ\omega\circ\widehat\varphi$
+with $\varphi'$ the pushforward of $\varphi$ through $\sigma$ (we don't need to actually compute
+it, as $\varphi$ we have knowledge on it up to the scaling matrix $\mathbf A$).
+We have the following diagram :
+\begin{center}
+	% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZARgBoAGAXVJADcBDAGwFcYkQBRAfXJAF9S6TLnyEUZYtTpNW7DgHIe-QSAzY8BIuQpSGLNok7Kh60VtKSae2YYX8pMKAHN4RUADMAThAC2SbSA4EEhk0vrsADoRDJ5oABZYIDRwCe44ITSM9ABGMIwACsIaYiCeWE5x6QIe3n6IoUH+yanp9VYyBiBRAO5YsHH0OFEx8YmZOXmFppqGZRVVKl6+TYHBiABM7eGGUb4wTvRJILlgUEgAzOTVIEt1AY0bNCdniAC0l1s2XRHYTj70SnGuQKRTMs3KlWMN1qSE2qwun06w3osQS8ihtwy8MQ50RkR+5X+9j4QA
+	\begin{tikzcd}[sep=5em]
+E \arrow[d, "\varphi'"] & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
+E'                      & E'_0 \arrow[u, "\widehat\varphi"', shift right] \arrow[l, "\sigma"]
+\end{tikzcd}
+\end{center}
+The degree of $\psi$ is clearly $wd^2$ since $\varphi$ and $\varphi'$ have the same degree $d$.
+Moreover we have $\varphi'\circ\sigma_0=\sigma\circ\varphi$ and so $[s]\varphi'=\sigma\circ\varphi
+\circ\widehat\omega_0$.
+Here is the proof that we can find an SIDH instance on $\psi$, the found equality is
+the Lemma 3 of \cite{polyCIST}.
+\begin{eqnarray*}
+	[s]\psi\begin{pmatrix} S \\ T \end{pmatrix} & = & [s]\varphi'\circ\omega\circ
+	\widehat\varphi\begin{pmatrix} S \\ T \end{pmatrix} \\
+																							&=& [s]\varphi'\circ\omega\circ\widehat
+																							\varphi\mathbf A\varphi
+																							\begin{pmatrix} P \\ Q \end{pmatrix} \\
+																							& =&[sd]\mathbf A\varphi'\circ\omega\circ
+																							\begin{pmatrix} P \\ Q \end{pmatrix}  \\
+																							&=&[d]\mathbf A\sigma\circ\varphi\circ\widehat\sigma_0
+																							\circ\omega\begin{pmatrix} P \\ Q \end{pmatrix}  \\
+																							&=&[d]\mathbf{AM}\sigma\circ\varphi
+																							\begin{pmatrix} P \\ Q \end{pmatrix} \\
+																							&=&[d]\mathbf{AMA^{-1}}\sigma\begin{pmatrix} S \\ T \end{pmatrix} \\
+																							&=&[d]\mathbf{M}\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
+\end{eqnarray*}
+
+%	It is possible to generalize this idea to the case where $\omega$ is an isogeny from $E_0$ 
+%	to another curve $E'_0$, the definition of $\psi$ must be change to
+%	$\varphi'\circ\omega\circ\widehat\varphi$ with $\varphi'$ linked to $\varphi$ and
+%	starting from $E_0'$ and going to another curve $E'$. Since $\omega$ isn't an endomorphism
+%	anymore we need to introduce another isogeny $\sigma_0$ of the same type in order to keep
+%	a matrix form 
+
+		
+
+
+
+		\bibliographystyle{unsrt}
+		\bibliography{biblio}
+	\end{document}
