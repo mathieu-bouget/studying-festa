@@ -9,6 +9,8 @@
 	\usepackage{tikz-cd}
 	\usepackage{nameref}
 	\newtheorem{theorem}{Theorem}
+
+	\newtheorem{problem}{Problem}
 	\tikzcdset{every label/.append style = {font = \large}}
 	%\tikzcdset{every vertice/.append style = {font = \huge}}
 
@@ -203,6 +205,21 @@ E_1 \arrow[r, "g_{N_2}"']                                           & F \arrow[u
 	$$
 
 	%connaissance des degrés suffisantes ?
+	\subsection{Security}
+	In the paper, the authors introduce the problem from which the one-wayness of the
+	FESTA function comes from.
+	\begin{problem}[Computational isogeny with double scaled-torsion problem]
+		Let $E_0$ be a supersingular elliptic curve defined over $\mathbb{F}_{p^2}$ and
+		let  $E_0'$ be a random supersingular elliptic curve defined over the same field.
+		Consider two isogenies $\varphi:E_0\to E_1$ and $\varphi':E'_0\to E'_1$ of smooth
+		degrees $d$ and $d'$ , respectively. Let $n$ be a smooth integer coprmier with $d$ and 
+		$d'$, and let $\mathbf A $ be a matrix sampled as $\mathbf A\gets^{\$}\mathcal M_n$.
+		
+		Given the curves  $E_0,E_1,E'_0,E'_1$, two bases $P,Q$ of $E_0[n]$ and $P',Q'$ of
+		$E'_0[n]$, and the points $\mathbf A(\varphi(P)\varphi(Q))^T$ and $\mathbf A
+		(\varphi'(P')\varphi'(Q'))^T$, computes the isogenies $\varphi$ and $\varphi'$.
+	\end{problem}
+	\subsection{Parameters}
 	
 
 	\section{Attacks}
@@ -211,8 +228,9 @@ E_1 \arrow[r, "g_{N_2}"']                                           & F \arrow[u
 	the entire protocol, however there is a stronger assumption that is made in FESTA which
 	is that there are two interpolation with the same scaling matrix.
 
-	\subsection{Computational isogeny with scaled-torsion problem}
-	Even if FESTA relies on a stronges assumption that this problem, there is a major intrest
+
+	\subsection{Lollipop Attack}
+	Even if FESTA relies on a stronger assumption than this problem, there is a major intrest
 	in sutdying current strategies used to break a CIST instance. I briefly introduce
 	the one provided in \cite{polyCIST}.
 	
@@ -261,14 +279,14 @@ This way we have, denoting $w$ the degree of $\omega$ :
 		% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAFEB9YkAX1PSZc+QijIBGKrUYs27AOTc+UmFADm8IqABmAJwgBbJGRA4IScdXrNWiEAB179XWgAWWENTjvtOC9QY6ACMYBgAFITwCNl0sNVc-fh19I0QTM2MAiAg0InEADjJtRjgYKUCQ8MiRGLiEz2kbNkdDGDU6PgEQPUN-U3M0rx8-REtG2TtHAHcsWFc6HEdnNw8A4NCI7CjREFj4xIpeIA
 		\begin{tikzcd}[sep=5em]
 E_0 \arrow[d, "\varphi"', shift right] \arrow["\omega"', loop, distance=2em, in=125, out=55] \\
-E'_0 \arrow[u, "\widehat\varphi"', shift right]
+E \arrow[u, "\widehat\varphi"', shift right]
 \end{tikzcd}
 \end{center}
 
 We need to controll the degree of $\omega$ in order to apply the SIDH attack. There is an
 improvement of this technique that reduces the degree in some cases. We now set $\omega$ to
-be an isogeny from $E_0$ to some other curve $E$ and take another isogeny $\sigma_0:E_0\to E$.
-We controll the endomorphism $\omega'=\widehat\sigma_0\circ\omega$ by the matrix $\mathbf M$ :
+be an isogeny from $E_0$ to some other curve $E$ and take another isogeny $\sigma_0:E_0\to E'_0$.
+We control the endomorphism $\omega'=\widehat\sigma_0\circ\omega$ by the matrix $\mathbf M$ :
 \[
 	(\widehat\sigma_0\circ\omega) \begin{pmatrix} P \\ Q\end{pmatrix} = \mathbf M \begin{pmatrix} P \\ Q \end{pmatrix}
 \] 
@@ -276,8 +294,8 @@ The diagram is now
 \begin{center}
 % https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZARgBoAGAXVJADcBDAGwFcYkQBRAfXJAF9S6TLnyEUZYtTpNW7DgHIe-QSAzY8BIuQpSGLNok78pMKAHN4RUADMAThAC2SbSBwQkZafvYAdHw1s0AAssEBo4EOscDxpGegAjGEYABWENMRBbLDMg6IEbeydETzdncMjo4po9WUM-AHcsWCD6HD8A4NDYhKTU9VF2LJy8lTtHMtd3RAAmapkDED9HGDN6MJBEsCgkAGZyfJAxopdSmZpN7cQAWj257zqfbDMHeiVuxJS0gcMh3OM+IA
 	\begin{tikzcd}[sep=5em]
-E & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
-  & E'_0 \arrow[u, "\widehat\varphi"', shift right]
+E'_0 & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
+  & E \arrow[u, "\widehat\varphi"', shift right]
 \end{tikzcd}
 \end{center}
 
@@ -295,8 +313,8 @@ We have the following diagram :
 \begin{center}
 	% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZARgBoAGAXVJADcBDAGwFcYkQBRAfXJAF9S6TLnyEUZYtTpNW7DgHIe-QSAzY8BIuQpSGLNok7Kh60VtKSae2YYX8pMKAHN4RUADMAThAC2SbSA4EEhk0vrsADoRDJ5oABZYIDRwCe44ITSM9ABGMIwACsIaYiCeWE5x6QIe3n6IoUH+yanp9VYyBiBRAO5YsHH0OFEx8YmZOXmFppqGZRVVKl6+TYHBiABM7eGGUb4wTvRJILlgUEgAzOTVIEt1AY0bNCdniAC0l1s2XRHYTj70SnGuQKRTMs3KlWMN1qSE2qwun06w3osQS8ihtwy8MQ50RkR+5X+9j4QA
 	\begin{tikzcd}[sep=5em]
-E \arrow[d, "\varphi'"] & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
-E'                      & E'_0 \arrow[u, "\widehat\varphi"', shift right] \arrow[l, "\sigma"]
+E'_0 \arrow[d, "\varphi'"] & E_0 \arrow[d, "\varphi"', shift right] \arrow[l, "\omega", bend left] \arrow[l, "\sigma_0"', bend right] \\
+E'                      & E \arrow[u, "\widehat\varphi"', shift right] \arrow[l, "\sigma"]
 \end{tikzcd}
 \end{center}
 The degree of $\psi$ is clearly $wd^2$ since $\varphi$ and $\varphi'$ have the same degree $d$.
@@ -319,6 +337,67 @@ the Lemma 3 of \cite{polyCIST}.
 																							&=&[d]\mathbf{AMA^{-1}}\sigma\begin{pmatrix} S \\ T \end{pmatrix} \\
 																							&=&[d]\mathbf{M}\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
 \end{eqnarray*}
+
+\subsubsection{Application to FESTA}
+In FESTA, the secret matrix $\mathbf A$ is diagonnal so matrix $\mathbf M$ should
+be either diagonnal in order to commute, that means that the  $P,Q$ are eigenvectors
+of $\widehat\sigma_0\circ\omega$.
+\subsection{Attack description for FESTA}
+
+
+\paragraph{Output}
+Secret isogeny $\varphi:E_0\to E$ and diagonnal scaling matrix $\mathbf A$
+\paragraph{Input}
+\begin{itemize}
+	\item curves $E_0,E$
+	\item degree $d$ of secret isogeny $\varphi$
+	\item N 
+	\item a basis $\{P,Q\}$ of $E_0[N]$
+	\item a basis $\{S,T\}$ of $E[N]$ such that
+		\[
+		\begin{pmatrix} S \\ T \end{pmatrix} =
+		\mathbf A\cdot\varphi\begin{pmatrix} P \\ Q \end{pmatrix} 
+		\] 
+	\item good $\sigma_0$ and  $\omega$
+\end{itemize}
+
+
+%\paragraph{Steps}
+%Choose $\sigma_0$ (there are not so many choices as the pushforward through 
+%$\varphi$ must be known).
+%Then choose $\omega$ in order to have P beeing an
+%eigenvector of $\widehat\sigma_0\circ\omega$ :
+%to achieve this step we need to compute an $\mathbb Z$-module basis of  End($E_0$)
+%then we can write  $\omega=\alpha u+\beta v$ (maybe others components?, max 4)
+%find quadratic equations
+%-> o
+%
+%known/unknown endomorphism ring
+%overstreteched : B too large to have the B-torsion "Fp2 rationnal" 
+%
+
+
+
+\paragraph{Description}
+
+
+\begin{enumerate}
+	\item Compute $\mathbf M$ using $\omega,\sigma_0$ and $P,Q$.
+	\item Compute $\sigma$ using $\sigma_0$ (and maybe the few infomation on  $\varphi$)
+	\item Compute $s\cdot\psi\begin{pmatrix} S \\ T \end{pmatrix} $ using Lemma 3
+	\item if $s$ and $N$ are coprime, compute $\psi\begin{pmatrix} S \\ T \end{pmatrix}$ % whatif only partial information
+	\item use SIDHATTACK to compute the kernel of $\psi$ 
+	\item compute $\varphi$ using guesses
+\end{enumerate}
+
+
+
+
+%\paragraph{Extraction} ($\psi$ must encode non trivial information => condition?,
+%because $\widehat\sigma_0\circ\omega$ must be non trivial)
+%
+%ideal scenario, $\psi$ cyclic
+%(an heuristic limits number of guess to recover the entire isogeny)
 
 %	It is possible to generalize this idea to the case where $\omega$ is an isogeny from $E_0$ 
 %	to another curve $E'_0$, the definition of $\psi$ must be change to
