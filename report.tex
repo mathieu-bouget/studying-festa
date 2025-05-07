@@ -346,20 +346,37 @@ of $\widehat\sigma_0\circ\omega$.
 
 
 \paragraph{Output}
-Secret isogeny $\varphi:E_0\to E$ and diagonnal scaling matrix $\mathbf A$
-\paragraph{Input}
-\begin{itemize}
-	\item curves $E_0,E$
-	\item degree $d$ of secret isogeny $\varphi$
-	\item N 
-	\item a basis $\{P,Q\}$ of $E_0[N]$
-	\item a basis $\{S,T\}$ of $E[N]$ such that
-		\[
-		\begin{pmatrix} S \\ T \end{pmatrix} =
-		\mathbf A\cdot\varphi\begin{pmatrix} P \\ Q \end{pmatrix} 
-		\] 
-	\item good $\sigma_0$ and  $\omega$
-\end{itemize}
+Secret isogeny $\varphi:E_0\to E$ and diagonnal scaling matrix $\mathbf A$ which is here assumed to be diagonnal.
+\subsubsection{Input}
+	\paragraph{Description of the CIST instance}
+	We are given the values that describe the CIST instance to solve : the starting curve $E_0$ and the codomain $E$, the degree $d$ of the secret isogeny $\varphi$. We also have $N$, a basis $\{P,Q\}$ of $E_0[N]$ the $N$-torsion of the starting curve and also scaled information of how $\varphi$ acts on it, that is points $S,T$ such that \[
+	\begin{pmatrix} S \\ T \end{pmatrix} =\mathbf A \cdot\varphi\begin{pmatrix} P \\ Q \end{pmatrix} 
+	\] where $\mathbf A$ is the secret scaling matrix.
+	All these inputs are $E_0,E,d,N,P,Q,S,T$.
+
+	\paragraph{Additionnal inputs}
+	The attack also require to find good $\sigma_0$ and good $\omega$, these are isogeny going from $E_0$ and having the same codomain $E_0'$ and that must fullfil followings requirements
+	\begin{itemize}
+		\item The endomorphism $\widehat\sigma_0\circ\omega\in\mathrm{End}(E_0)$ should admitt $P,Q$ as eigenvectors
+		\item The degree $w$ of $\omega$ should be small
+		\item The pushforward of $\sigma_0$ through $\varphi$ should be easy to compute
+		\item The degree $s$ of $\sigma_0$ should be coprime with $N$
+	\end{itemize}
+	Theses additionnal inputs are $\sigma_0,s,\omega,w$.
+
+%\begin{itemize}
+%	\item curves $E_0,E$
+%	\item degree $d$ of secret isogeny $\varphi$
+%	\item N 
+%
+%	\item a basis $\{P,Q\}$ of $E_0[N]$
+%	\item a basis $\{S,T\}$ of $E[N]$ such that
+%		\[
+%		\begin{pmatrix} S \\ T \end{pmatrix} =
+%		\mathbf A\cdot\varphi\begin{pmatrix} P \\ Q \end{pmatrix} 
+%		\] 
+%	\item good $\sigma_0$ and  $\omega$
+%\end{itemize}
 
 
 %\paragraph{Steps}
@@ -378,17 +395,42 @@ Secret isogeny $\varphi:E_0\to E$ and diagonnal scaling matrix $\mathbf A$
 
 
 
-\paragraph{Description}
+\subsubsection{Description}
 
 
-\begin{enumerate}
-	\item Compute $\mathbf M$ using $\omega,\sigma_0$ and $P,Q$.
-	\item Compute $\sigma$ using $\sigma_0$ (and maybe the few infomation on  $\varphi$)
-	\item Compute $s\cdot\psi\begin{pmatrix} S \\ T \end{pmatrix} $ using Lemma 3
-	\item if $s$ and $N$ are coprime, compute $\psi\begin{pmatrix} S \\ T \end{pmatrix}$ % whatif only partial information
-	\item use SIDHATTACK to compute the kernel of $\psi$ 
-	\item compute $\varphi$ using guesses
-\end{enumerate}
+\paragraph{Compute M}
+We compute the matrix $\mathbf M$ such that 
+\[
+	(\widehat\sigma_0\circ\omega)\begin{pmatrix} P \\ Q \end{pmatrix} = \mathbf M\begin{pmatrix} P \\ Q \end{pmatrix} 
+\] 
+
+\paragraph{Compute $\sigma$} We compute $\sigma$ the pushforward through $\varphi$.
+Recall that	$\sigma_0$ is either the identity or the Frobenius so we know $\sigma$.
+
+\paragraph{Compute $S'$ and $T'$}
+We compute the two followings points
+\[
+	\begin{pmatrix} S' \\ T' \end{pmatrix} = s^{-1}\cdot d\cdot\mathbf M\cdot\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
+\] 
+where $s^{-1}$ is the inverse of $s$ modulo $N$.
+
+\paragraph{Compute $\psi$}
+Using SIDH attack, compute the isogeny $\psi$ such that \[
+ \begin{pmatrix} S' \\ T' \end{pmatrix} = \psi\begin{pmatrix} S \\ T \end{pmatrix} 
+\] 
+
+%Thanks to Lemma 3 we have an SIDH instance on $\psi=\varphi'\circ\sigma_0\circ\widehat\varphi$ with  $\varphi'$ the pushforward of $\varphi$ through $\sigma$
+
+\paragraph{Compute $\varphi$}
+
+%\begin{enumerate}
+%	\item Compute $\mathbf M$ using $\omega,\sigma_0$ and $P,Q$.
+%	\item Compute $\sigma$ using $\sigma_0$ (and maybe the few infomation on  $\varphi$)
+%	\item Compute $s\cdot\psi\begin{pmatrix} S \\ T \end{pmatrix} $ using Lemma 3
+%	\item if $s$ and $N$ are coprime, compute $\psi\begin{pmatrix} S \\ T \end{pmatrix}$ % whatif only partial information
+%	\item use SIDHATTACK to compute the kernel of $\psi$ 
+%	\item compute $\varphi$ using guesses
+%\end{enumerate}
 
 
 
