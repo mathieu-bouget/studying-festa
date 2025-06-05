@@ -8,7 +8,9 @@
 	\usepackage{tikz}
 	\usepackage{tikz-cd}
 	\usepackage{nameref}
+	\usepackage{algorithm2e}
 	\newtheorem{theorem}{Theorem}
+
 
 	\newtheorem{problem}{Problem}
 	\tikzcdset{every label/.append style = {font = \large}}
@@ -399,6 +401,12 @@ or $\perp$ if input isn't valid.
 
 \subsubsection{Description}
 
+%TODO garder ?
+\begin{algorithm}
+	\DontPrintSemicolon
+	\KwIn{$E_0,E,d,N,P,Q,S,T,\sigma_0,s,\omega,w$}
+	\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\perp$}
+\end{algorithm}
 
 \paragraph{Compute M}
 We compute the matrix $\mathbf M$ such that 
@@ -423,7 +431,7 @@ Using SIDH attack, compute the isogeny $\psi$ such that \[
 
 %Thanks to Lemma 3 we have an SIDH instance on $\psi=\varphi'\circ\sigma_0\circ\widehat\varphi$ with  $\varphi'$ the pushforward of $\varphi$ through $\sigma$
 
-(Add conditions of success with N,d…)
+%(Add conditions of success with N,d…)%TODO
 
 \paragraph{Compute $\varphi$}
 
@@ -431,6 +439,15 @@ Compute maximal integer $d', d'|d$ such that
 \[
 	E[d']\subseteq \mathrm{ker}(\psi)
 \] 
+
+First reduce the generators to get generators of $E[d]\cup\ker(\psi)$, look at the divisors that appear twice in generator orders list.
+
+
+%\begin{algorithm}
+%	\DontPrintSemicolon
+%	\KwIn{pas clair…}
+%	\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\perp$}
+%\end{algorithm}
 
 \subparagraph{degree-$d/d'$ component}
 Pick an arbitrary element $U$ of $\mathrm{ker}(\psi)[d]$ and scale it by $d'$ to get $d'U$,
@@ -444,17 +461,21 @@ Write $d'$ as
 	d' = \prod_{i=1}^{r'}l_i^{e_i'}
 \] 
 %For each prime factor $l_i^{e_i'}$ of $d'$ :
-For each $i$, find two generators $L_{i,0}$ and $L_{i,1}$ of the two eigenspaces $\widehat\sigma_0\circ\omega$ acting on $E_0[l_i^{e_i'}]$
+For each $i$, find two generators $L_{i,0}$ and $L_{i,1}$ of the two eigenspaces of $\widehat\sigma_0\circ\omega$ acting on $E_0[l_i^{e_i'}]$. %With Weil pairing we have the double discret log so we can recover the matrix of $\widehat\sigma_0\circ\omega$ in  $E_0[l_i^{e'_i}]$
 
 \subparagraph{Verify degree-$d'$ component}
-We start by computing the determinant of the scaling matrix using Weilparing
+We start by computing the determinant of the scaling matrix using Weilparing.
+
 \begin{itemize}
-	\item Choose $b\in\{0,1\}^{r'}$
-	\item Compute $L_b=\prod_{i=1}^{r'} L_{i,b_i}$ (not a product)
-	\item Compute a guess $\varphi_g$ for the secret isogeny
-	\item Compute  $u=\log_{\varphi_g(P)}(S)$ and $v=\log_{\varphi_g(Q)}(T)$
-	\item Check if $\det A=uv$, then the guess is correct, otherwise take next $b$ and make a new guess
+	\item Pick $b\in\{0,1\}^{r'}$
+	\item Compute $p_b=\varphi_b(P)$ and $q_b=\varphi_b(Q)$ with $\varphi_b$ the isogeny such that, for each $1\leq i\leq r'$, $\ker(\varphi_b)[l_i^{e'_i}]=\langle L_{i,b[i]}\rangle$
+	%\item Choose $b\in\{0,1\}^{r'}$
+%	\item Compute $L_b=\prod_{i=1}^{r'} L_{i,b_i}$ (not a product)
+%	\item Compute a guess $\varphi_g$ for the secret isogeny
+	\item Compute  $u_b=\log_{p_b}(S)$ and $v_b=\log_{q_b}(T)$
+	\item Check if $\det A=u_b v_v$, then the guess is correct, otherwise take next $b$ and make a new guess
 \end{itemize}
+	 It is possible to simplify the computation of the guesses $\varphi_b$ using product trees in the isogeny chain
 
 
 %For each factor $l^e$ of $d$, look if $l$ splits in $\mathbb{Z}[\widehat\sigma_0\circ\omega]$.
