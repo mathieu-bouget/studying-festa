@@ -346,6 +346,17 @@ be either diagonnal in order to commute, that means that the  $P,Q$ are eigenvec
 of $\widehat\sigma_0\circ\omega$.
 \subsection{Attack description for FESTA}
 
+The attack proposed in the paper is summarized as the 3 following steps
+\begin{itemize}
+	\item Find good $\omega$ and good $\sigma_0$ 
+	\item Recover the isogeny $\psi$
+	\item Recover $\varphi$ from $\psi$
+\end{itemize}
+We are interested here in the case where "good" $\omega$ and $\sigma_0$ have already been found
+so they are been considerd as auxiliary inputs for the algorithm we describe here. Once these
+$\sigma_0$ and $\omega$ as been found, computing the isogeny $\psi$ depends on an attack against
+SIDH while the third step which is recovering $\varphi$ from $\psi$ is more technical and this
+is the one we give detail about.
 
 \subsubsection{Input}
 	\paragraph{Description of the CIST instance}
@@ -401,50 +412,56 @@ or $\bot$ if input isn't valid.
 
 \subsubsection{Description}
 
-%TODO garder ?
-\begin{algorithm}
-	\DontPrintSemicolon
-	\KwIn{$E_0,E,d,N,P,Q,S,T,\sigma_0,s,\omega,w$}
-	\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\bot$}
-\end{algorithm}
+\paragraph{Computing $\psi$}
 
-\paragraph{Compute M}
-We compute the matrix $\mathbf M$ such that 
-\[
-	(\widehat\sigma_0\circ\omega)\begin{pmatrix} P \\ Q \end{pmatrix} = \mathbf M\begin{pmatrix} P \\ Q \end{pmatrix} 
-\] 
+The first part is to compute the matrix $\mathbf M$ such that \[
+	(\widehat\sigma_0\circ \omega) \begin{pmatrix} P \\
+	Q \end{pmatrix} = \mathbf M \begin{pmatrix} P \\ Q \end{pmatrix} \] 
+Since $P$ and $Q$ are eigenvectors of $\widehat\sigma_0\circ\omega$ this computation is
+straightforward.
 
-\paragraph{Compute $\sigma$} We compute $\sigma$ the pushforward of $\sigma_0$ through $\varphi$.
+%\paragraph{Compute M}
+%We compute the matrix $\mathbf M$ such that 
+%\[
+%	(\widehat\sigma_0\circ\omega)\begin{pmatrix} P \\ Q \end{pmatrix} = \mathbf M\begin{pmatrix} P \\ Q \end{pmatrix} 
+%\] 
+
+The next step is to compute $\sigma$ the pushforward of $\sigma_0$ under $\varphi$ which
+is supposed to be easy to achieve.
 %Recall that	$\sigma_0$ is either the identity or the Frobenius so we know $\sigma$.
 
-\paragraph{Compute $S'$ and $T'$}
-We compute the two followings points
-\[
-	\begin{pmatrix} S' \\ T' \end{pmatrix} = s^{-1}\cdot d\cdot\mathbf M\cdot\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
-\] 
-where $s^{-1}$ is the inverse of $s$ modulo $N$.
-
-\paragraph{Compute $\psi$}
-Using SIDH attack, compute the isogeny $\psi$ such that \[
+It remains to compute an SIDH instance for $\psi=\varphi'\circ\omega\circ\widehat\varphi$, we
+know from Lemma 3 of \cite{polyCIST} that we can compute $S'$ and $T'$ this way \[
+	\begin{pmatrix} S' \\ T' \end{pmatrix} := s^{-1}\cdot d\cdot\mathbf M\cdot\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
+\] to obtain this SIDH instance of $\psi$ \[
  \begin{pmatrix} S' \\ T' \end{pmatrix} = \psi\begin{pmatrix} S \\ T \end{pmatrix} 
-\] 
+\]
+The degree of $\psi=\varphi'\circ\omega\circ\widehat\varphi$ is $wd^2$ which is smaller than
+$N^2$ and these are coprime so the polynomail SIDH attack is made possible to recover $\psi$ in
+the form of an oracle.
 
-%Thanks to Lemma 3 we have an SIDH instance on $\psi=\varphi'\circ\sigma_0\circ\widehat\varphi$ with  $\varphi'$ the pushforward of $\varphi$ through $\sigma$
+%\paragraph{Compute $S'$ and $T'$}
+%We compute the two followings points
+%\[
+%	\begin{pmatrix} S' \\ T' \end{pmatrix} = s^{-1}\cdot d\cdot\mathbf M\cdot\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
+%\] 
+%where $s^{-1}$ is the inverse of $s$ modulo $N$.
+%
+%\paragraph{Compute $\psi$}
+%Using SIDH attack, compute the isogeny $\psi$ such that \[
+% \begin{pmatrix} S' \\ T' \end{pmatrix} = \psi\begin{pmatrix} S \\ T \end{pmatrix} 
+%\] 
+
+%Thanks to Lemma 3 we have an SIDH instance on $\psi=\varphi'\circ\sigma_0\circ\widehat\varphi$
+%with  $\varphi'$ the pushforward of $\varphi$ through $\sigma$
 
 %(Add conditions of success with N,d…)%TODO
 
-\paragraph{Compute $\varphi$}
-
-Compute maximal integer $d', d'|d$ such that
-\[
-	E[d']\subseteq \mathrm{ker}(\psi)
-\] 
-
-%First reduce the generators to get generators of $E[d]\cup\ker(\psi)$, look at the divisors that appear twice in generator orders list.
-
+\paragraph{Getting $\varphi$ out of $\psi$}
 
 \begin{algorithm}
 	\caption{Extraction of $\varphi$ from $\psi$}
+	\label{algo:extraction}
 	\DontPrintSemicolon
 	\KwIn{An oracle of $\psi$}
 	\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\bot$}
@@ -486,15 +503,24 @@ Compute maximal integer $d', d'|d$ such that
 		}	
 	}
 	\If{$res=\top$}{
-		\Return  $\varphi$ where $\varphi$ is the isogeny with $\varphi_b$ as  $d'$ component and $\varphi_{d/d'}$ as $d/d'$
+		\Return  $\varphi$ and matrix $\mathrm{Diag}(\alpha_b,\beta_b)$ where $\varphi$ is the isogeny with $\varphi_b$ as  $d'$ component and $\varphi_{d/d'}$ as $d/d'$
 		component \;
 	}\Else{
 		\Return $\bot$
 	}
-
-
-
 \end{algorithm}
+
+In algorithm \ref{algo:extraction} there is an explicit method to get $\varphi$.
+
+
+Compute maximal integer $d', d'|d$ such that
+\[
+	E[d']\subseteq \mathrm{ker}(\psi)
+\] 
+
+%First reduce the generators to get generators of $E[d]\cup\ker(\psi)$, look at the divisors that appear twice in generator orders list.
+
+
 
 \subparagraph{degree-$d/d'$ component}
 Pick an arbitrary element $U$ of $\mathrm{ker}(\psi)$ of order $d$ and scale it by $d'$ to get $d'U$,
