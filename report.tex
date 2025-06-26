@@ -85,20 +85,20 @@
 	statement.
 
 	\begin{problem}
-	Given two curves $E,E'$ and $P,Q$ two independant points of smooth order $N$ and $\varphi(P),\varphi(Q)$
+	Given two curves $E,E'$ and $P,Q$ two independent points of smooth order $N$ and $\varphi(P),\varphi(Q)$
 	where $\varphi:E\to E'$ 
-	is a secret isogeny of smooth degree $d$ coprime with $N$, it is hard to recover the secret isogeny
+	is a secret isogeny of smooth degree $d$ coprime with $N$, it is hard to recover the secret isogeny.
 	\end{problem}
 
-	However it was proven non secure against classical computer in polynomial time
-	in year 2022 \cite{firstattacksidh}. Several protocol has been proposed to replace SIDH, they are
-	based on harder problems than the simple isogeny interpolation. These problems differs and change the
-	design of the protocols but the main idea is that giving scaled values $\lambda_1\varphi(P)$ and
+	However, it was proven non-secure against classical computers in polynomial time
+	in the year 2022 \cite{firstattacksidh}. Several protocols have been proposed to replace SIDH; they are
+	based on harder problems than the simple isogeny interpolation. These problems differ and change the
+	design of the protocols, but the main idea is that giving scaled values $\lambda_1\varphi(P)$ and
 	 $\lambda_2\varphi(Q)$ should be safer, even if it makes protocols more complex.
 
-	Among them there is FESTA proposed in \cite{FESTA} which has the
-	particularity to use the attack against SIDH in its decryption algorithm. The goal of this intership
-	was to focus on the security aspect of FESTA and its specific problem. To do so I worked on an attack
+	Among them, there is FESTA proposed in \cite{FESTA} which has the
+	particularity to use the attack against SIDH in its decryption algorithm. The goal of this internship
+	was to focus on the security aspect of FESTA and its specific problem. To do so, I worked on an attack
 	against the scaled torsion problem proposed in \cite{polyCIST}. The goal was to understand the strategy
 	of the attack and to describe precisely the attack in a favorable setting to have a clear statement in
 	some specific cases.
