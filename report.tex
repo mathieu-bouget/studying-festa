@@ -17,10 +17,13 @@
 \usepackage{nameref}
 \usepackage{caption}
 \usepackage{tikz}
+\usepackage{xcolor}
 \usepackage{tikz-cd}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
 
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
 
 
 
@@ -78,16 +81,27 @@
 
 	Over the last decades, isogeny-based cryptography feeds hope to find efficient
 	quantum-resistant primitives because of the reasonable running time and size of keys. One
-	major candidate was the protocol SIDH \cite{SIDH} proposed in 2011. It relied on the
-	hardness to recover a secret isogeny $\varphi:E\to E'$ between
-	two distant curves given its behaviour on a particular subgroup of $E$.
+	major candidate was the protocol SIDH \cite{SIDH} proposed in 2011 and relied on the following
+	statement.
+
+	\begin{problem}
+	Given two curves $E,E'$ and $P,Q$ two independant points of smooth order $N$ and $\varphi(P),\varphi(Q)$
+	where $\varphi:E\to E'$ 
+	is a secret isogeny of smooth degree $d$ coprime with $N$, it is hard to recover the secret isogeny
+	\end{problem}
+
 	However it was proven non secure against classical computer in polynomial time
-	in year 2022 \cite{firstattacksidh}.
+	in year 2022 \cite{firstattacksidh}. Several protocol has been proposed to replace SIDH, they are
+	based on harder problems than the simple isogeny interpolation. These problems differs and change the
+	design of the protocols but the main idea is that giving scaled values $\lambda_1\varphi(P)$ and
+	 $\lambda_2\varphi(Q)$ should be safer, even if it makes protocols more complex.
 
-	Several protocol has been proposed to replace SIDH, they are based on harder problem than the
-	simple isogeny interpolation. Among them there is FESTA \cite{FESTA}.
-%TODO
-
+	Among them there is FESTA proposed in \cite{FESTA} which has the
+	particularity to use the attack against SIDH in its decryption algorithm. The goal of this intership
+	was to focus on the security aspect of FESTA and its specific problem. To do so I worked on an attack
+	against the scaled torsion problem proposed in \cite{polyCIST}. The goal was to understand the strategy
+	of the attack and to describe precisely the attack in a favorable setting to have a clear statement in
+	some specific cases.
 
 	%Higher-dimension 
 	%Problème CIST supposé plus sûr 
@@ -95,6 +109,38 @@
 	%Attaque contre CIST $\implies$ utile contre FESTA ? 
 
 	\section{Background}
+
+	We give here some basic knowledge about elliptic curves and their use in cryptography. All the notions
+	are given in dimension 1 which doesn't require knowledge in algebraic geometry.
+
+	\subsection{Elliptic Curves}
+		Given a prime number $p>3$ and a field $\mathbb F$ with caracteristic that differs from $2,3$,
+		an elliptic curve $E$ is the set \[
+			E = \{(x,y)\in\mathbb F | y^2=x^{3}+ax+b\} \cup \{P_\infty\}
+		\] 
+		with $4a^3+27b^2\neq0$,
+		
+		There is a natural way to define addition between two points of $E$ that gives a group structure
+		with $P_\infty$ as neutral element. The addition of two points can be computed easly from the
+		coordinates of the two points with rationnal fonctions. 
+
+		A morphism between elliptic curve is a fonction $\alpha$ that maps $P\in E_1$ to
+		$\alpha(P)=(r(P),s(P))$ with  $r,s$ two rationnal fonctions from $E_1$ to $\mathbb F$, its codomain
+		is in $E_2$ so for every $P\in E_1$, we must have $s(P)^2=r(P)^3+a_2r(P)+b_2$ ($(r,s)$ can be seen as
+		a point of the elliptic curves $y^2=x^3+a_2x+b_2$ in the field  $\mathbb F(E_1)$ of the rationnal
+		functions of $E_1$). We avoided here technicalities about the infinity point but its image under
+		morphism is also well-defined.
+
+		\begin{definition}
+			An isogeny $\varphi$ is a non-constant morphism between two curves $E_1$ and $E_2$ that maps the
+			infinity of $E_1$ to the one of $E_2$
+		\end{definition}
+		Isogenies are also group morphism from $(E_1,+,P_{1,\infty})$ to $(E_2,+,P_{2,\infty})$, this is not
+		obvious as algebraic morphism are not necessarly morphism for groups.
+
+
+		\todo{Finish background}
+
 	\section{SIDH}
 	The Supersingular Isogeny Diffie-Hellmann is a scheme derived from the usual
 	Diffie-Hellmann exchange where we have a group $G= \langle g\rangle$ and Alice choose a
@@ -109,7 +155,7 @@
 	Alice knows $\varphi_A$ and  $E_B$ and would want to create something like
 	$\varphi_A':E_B\to E_{AB}$
 
-	%TODO sidh description
+	\todo{sidh description}
 	\subsection{High-level}
 	Before going into more details about the mathematical tools (2-dimension isogenies)
 	and strategies to break a generic SIDH instance, I introduce a generic condition
@@ -550,13 +596,14 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 
 					$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
 					$I,J\gets \mathbf{TorGen}(E,d)$\;
-					Compute $\mathbf H$ the matrix of $\psi$ in the basis $(I,J)$\;
+					%Compute $\mathbf H$ the matrix of $\psi$ in the basis $(I,J)$\;
+					$H\gets \mathrm{Mat}_{(I,J)}(\psi)$\;
 					%Compute minimum $u|d$ such that $\psi([u]I)=0$ \;
 					%Compute minimum $v|d$ such that $\psi([v]J)=0$ \;
 					%$d'\gets \gcd(\frac{d}{u},\frac{d}{v})$\;
 					% Faut-il à la place seulement calculer la matrice de $\psi$ sur E[d] dans la base ?
 					% Et ensuite prendre le pgcd des coeffs ?
-					$d'\gets \gcd(M_{11},M_{12},M_{21},M_{22})$ 
+					$d'\gets \gcd(H_{11},H_{12},H_{21},H_{22})$ 
 
 					Compute $P\in\langle I,J\rangle$ of order $d$ such that $\psi(P)=0$\;
 					Construct the isogeny $\varphi_{cyclic}$ of kernel  $\langle [d']P\rangle$\;
@@ -645,6 +692,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 
 				\subsection{Correctness}
 %TODO change "small" in the inputs to the precise degree we need
+
+				\subsubsection{Computing $\psi$}
 				We assume we are given a valid CIST instance, the set $X$ of possible scaling matrices is the
 				set of diagonal matrices. Then, the fact that $P,Q$ are eigenvectors of the
 				endomorphism $\widehat\sigma_0\circ\omega$ ensure that its matrix  $\mathbf M$ in the basis $(P,Q)$
@@ -663,7 +712,6 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			there are several way to represent the result of this attack, it could be a description of
 			$\ker\psi$ which is equivalent to the access of an oracle of $\psi$.
 
-			\subsubsection{Extraction of $\varphi$}
 			
 			% Récupérer la forme matricielle ?
 			%TODO ajouter hypothèse sigma_0 rond omega cyclique
@@ -749,20 +797,30 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			\] 
 			and applying $\widehat\sigma_0$ leads to
 			$(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']$.
+
+			This equality holds when considering prime factors $l^{e'}$ of $d'$ so $\ker\varphi$ is an
+			invariant subspace for $(\widehat\sigma_0\circ\omega)$ acting on $E_0[l^{e'}]$.
 			%TODO ajouter pairwise dans les hypothèse, les mêmes que celles dans le papier, voir si certaines
 			%peuvent être supprimées
 			
 
+		%TODO computing eigenvalues ? relèvement de Hensel ok ?	
 
 
-					
-				\subsection{Running time}
-				\paragraph{TODO}
-				How easy it is to compute $\varphi$ of degree $d$ (or get $\ker\varphi[d]$)when we know
+				\todo{Verify correctness}
+				Can we can get $\varphi$ of degree $d$ (or get $\ker\varphi[d]$) when we
+				know
 				\begin{itemize}
 					\item $\ker\widehat\varphi[\frac{d}{d'}]$ (component $d/d'$ of the dual)
 					\item $\ker\varphi[d']$ (component $d'$ of $\varphi$)
 				\end{itemize}
+				Computation is not that difficult after that
+					
+				\subsection{Running time}
+
+
+				\todo{Running Time}
+
 
 				%For each factor $l^e$ of $d$, look if $l$ splits in $\mathbb{Z}[\widehat\sigma_0\circ\omega]$.
 
