@@ -84,7 +84,7 @@
 	major candidate was the protocol SIDH \cite{SIDH} proposed in 2011 and relied on the following
 	statement.
 
-	\begin{problem}
+	\begin{problem}[SIDH Instance]\label{pb:sidh}
 	Given two curves $E,E'$ and $P,Q$ two independent points of smooth order $N$ and $\varphi(P),\varphi(Q)$
 	where $\varphi:E\to E'$ 
 	is a secret isogeny of smooth degree $d$ coprime with $N$, it is hard to recover the secret isogeny.
@@ -165,20 +165,25 @@
 			$[d]_E$ is the isogeny that maps $P\in E$ to $P+\dots+P=[d]P\in E$ 
 		\end{definition}
 
-		To complete this short introduciton to elliptic curves, we mention here specifics subgroup of $ $
+		To complete this short introduciton to elliptic curves, we mention here specifics subgroup of $E$
 		that are the $N$-torsion, denoted $E[N]$. Given a positive ineger $N$, the $N$-torsion is the kernel
 		of $[N]$, it corresponds to all the points that have their order dividing $N$. When $N$ is coprime
 		with $p$, we have \[
 			E[N]\cong \mathbb Z_N \times \mathbb Z_N
 		\] 
-%TODO background ?
 		%TODO supersingular ?
-		\section{Security assumptions}
+		\section{SIDH}
 
-		I introduce first the different problem protocols relies on and the attack against SIDH, which is
-		directly used in FESTA.
 
-		\subsection{SIDH}
+		I introduce here the protocol SIDH and the attack, even if this protocol was proven completly non
+		secure, the scheme of the attack is particularlyrelevant in the research of attack against more
+		recent protocols : it makes use of some mathematical evolved tools such are highier-dimensionnal
+		isogenies and attacks against other protocol try to reduce them to an SIDH instance, that is to say 
+		an isntance of the Problem \ref{pb:sidh} mentionned in the introduction.
+		Moreover, the protocol we want to attack, FESTA, use an implementation of the attack in its
+		decryption algorithm.  
+
+		\subsection{Description}
 	The Supersingular Isogeny Diffie-Hellmann is a scheme derived from the usual
 	Diffie-Hellmann exchange where we have a group $G= \langle g\rangle$ and Alice choose a
 	secret integer $a$ and send $g^a$, Bob choose a secret $b$ and send $g^b$ to Alice,
@@ -208,13 +213,16 @@
 	These two curves $E_{AB}$ and $E_{BA}$ are in fact always isomorphic so they both agreed on an
 	isomorphic class of curve at the end of the protocol.
 
-	%todo{sidh description}
-	\subsection{High-level}
+	The security of the protocol relies entierly on the assumption that Problem \ref{pb:sidh} is hard
+	because if not then an adversary,
+	with the knwoledge of $\varphi_A(P_B),\varphi_A(Q_B)$ has sufficient information to recover entierly
+	the secret isogeny $\varphi_A$ of Alice and then build the curve $E_{BA}$.
+	\subsection{High-level view of the attack}
 	Before going into more details about the mathematical tools (2-dimension isogenies)
 	and strategies to break a generic SIDH instance, I introduce a generic condition
 	on the degree of the secret isogeny and the torsion of $E_0$ that is sufficient
-	to find $\varphi$.
-	\begin{theorem}{\cite{sidhpolyattack}}
+	to find $\varphi$ according to an generic attack proposed in {\cite{sidhpolyattack}}. 
+	\begin{theorem}
 		Let $\varphi:E_0 \to E$ be a secret degree disogeny (where $d$
 		is known) and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
 		where $N$ and $d$ are assumed smooth and coprime, and $N^2 > 4d$. Let $\mathbb{F}_q$ be the
@@ -226,7 +234,7 @@
 	in this case. Intuitively, the larger $N$ the more information is given about
 	the behaviour of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
 	so is difficult to recover from torsion points.
-	$\varphi$.
+
 	\subsection{Mathematical tools}
 	Giving the images of torsion points was considered safe until a mathematical result based
 	on elliptic curve product and higher-dimensionnal isogenies gave ways to recover
@@ -263,7 +271,62 @@
 
 		\section{FESTA}
 		In 2023, a public key encryption scheme based on the SIDH attack was introduced
-		in \cite{FESTA} and relies on a trapdoor function.
+		in \cite{FESTA}, it and relies on a trapdoor function, that is a function which is
+		difficult to inverse except whith the knowledge of an additionnal information. This kind
+		of function is a primitive that can be used to build public-key encryption scheme
+		and the one-wayness of the function is equivalent to the security of the scheme.
+
+		\subsection{Security assumptions}
+			As said before, SIDH has been broken so cryptographers have explored the option to scale
+			the additonnal information they provide, we usually use matrix notation for scaling
+			\[
+				\begin{pmatrix} S \\ T \end{pmatrix} = \begin{pmatrix} \lambda_1 & 0\\ 0 & \lambda_2 \end{pmatrix} 	
+				\varphi \begin{pmatrix} P \\ Q \end{pmatrix} 
+			\] 
+			which means $S=\lambda_1\varphi(P)$ and $T=\lambda_2\varphi(Q)$. The derived problem is described
+			here, with $\mathcal M_n$ the set of diagonal matrices. An important fact is that the product
+			$\lambda_1\lambda_2$ can be easly computed through Weil pairing, we have
+			$$e_n(S,T)=e_n([\lambda_1]\varphi(P),[\lambda_2]\varphi(Q))=
+			e_n(\varphi(P),\varphi(Q))^{\lambda_1\lambda_2}=e_n(P,Q)^{\lambda_1\lambda_2\deg\varphi}$$
+			which is a discrete log in a smooth order group and gives this way access to the product.
+			 
+
+			\begin{problem}[Computational isogeny with scaled-torsion (CIST) problem]
+
+				Let $\varphi:E_0\to E_1$ be an isogeny of smooth degree $d$ between supersingular elliptic curves
+				defined over $\mathbb F_{p^{2}}$, and let $n$ be a smooth integer coprime with $d$.
+				Given the curves $E_0$ with a basis $P_0,Q_0$ of $E_0[n]$ and the curve $E_1$ with a basis
+			$\mathbf A{(\varphi(P_0) \varphi(Q_0))}^{T}$, where $\mathbf A\gets^\$\mathcal M_n$, compute the
+				isogeny  $\varphi$
+			\end{problem}
+	
+			This problem is considered safe for the moment, and a lot of protocols relie on its hardness. But
+			there exist advanced attack that work in specific setting, generalization of such attack could lead
+			to break this generation of protocol. 
+
+
+			However, FESTA is based on an easier version of the problem
+			where there are two secret isogenies to find with two differents startings curves and given
+			for each scaled information on the torsion points, but with the same scaling matrix applied to the
+			two pair of points.
+
+		\begin{problem}[Computational isogeny with double scaled-torsion (CIST2) problem]
+			Let $E_0$ be a supersingular elliptic curve defined over $\mathbb{F}_{p^2}$ and
+			let  $E_0'$ be a random supersingular elliptic curve defined over the same field.
+			Consider two isogenies $\varphi:E_0\to E_1$ and $\varphi':E'_0\to E'_1$ of smooth
+			degrees $d$ and $d'$ , respectively. Let $n$ be a smooth integer coprmier with $d$ and 
+			$d'$, and let $\mathbf A $ be a matrix sampled as $\mathbf A\gets^{\$}\mathcal M_n$.
+
+			Given the curves  $E_0,E_1,E'_0,E'_1$, two bases $P,Q$ of $E_0[n]$ and $P',Q'$ of
+			$E'_0[n]$, and the points $\mathbf A(\varphi(P)\varphi(Q))^T$ and $\mathbf A
+			(\varphi'(P')\varphi'(Q'))^T$, computes the isogenies $\varphi$ and $\varphi'$.
+		\end{problem}
+
+		This is a problem designed specifically for FESTA so there is no complex proof of security for
+		FESTA if CIST2 hardness is assumed so the ultimate goal of the intership would be to find an attack
+		against this specific problem, that is an attack that would exploit the fact that the two scaling
+		matrices are the same.
+
 		\subsection{High-level description}
 		The public parameters are a supersingular elliptic curve $E_0$ definied over
 		$\mathbb{F}_{p^2}$ and a basis $\mathcal B_{E_0[2^b]}=(P_b,Q_b)$ of the $2^b$-torsion
@@ -378,22 +441,9 @@
 		$$
 
 		%connaissance des degrés suffisantes ?
-		\subsection{Security}
-		In the paper, the authors introduce the problem from which the one-wayness of the
-		FESTA function comes from.
-		\begin{problem}[Computational isogeny with double scaled-torsion problem]
-			Let $E_0$ be a supersingular elliptic curve defined over $\mathbb{F}_{p^2}$ and
-			let  $E_0'$ be a random supersingular elliptic curve defined over the same field.
-			Consider two isogenies $\varphi:E_0\to E_1$ and $\varphi':E'_0\to E'_1$ of smooth
-			degrees $d$ and $d'$ , respectively. Let $n$ be a smooth integer coprmier with $d$ and 
-			$d'$, and let $\mathbf A $ be a matrix sampled as $\mathbf A\gets^{\$}\mathcal M_n$.
-
-			Given the curves  $E_0,E_1,E'_0,E'_1$, two bases $P,Q$ of $E_0[n]$ and $P',Q'$ of
-			$E'_0[n]$, and the points $\mathbf A(\varphi(P)\varphi(Q))^T$ and $\mathbf A
-			(\varphi'(P')\varphi'(Q'))^T$, computes the isogenies $\varphi$ and $\varphi'$.
-		\end{problem}
 		\subsection{Parameters}
 
+		\todo{parameters}
 
 		\section{Attacks}
 		The security of FESTA is based on the hardness of isogeny interpolation when the
