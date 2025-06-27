@@ -737,7 +737,7 @@
 					\caption{Extraction of $\varphi$ from $\psi$}
 					\label{algo:extraction}
 					\DontPrintSemicolon
-					\KwIn{An oracle of $\psi$}
+					\KwIn{An oracle of $\psi$ and inputs described in section 6.1.1}
 					\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\bot$}
 					\tcp{Computing $d'$}
 					$I,J\gets \mathbf{TorGen}(E,d)$ \;
@@ -777,7 +777,6 @@
 					}
 					%TODO check if mixing the already known compoenent of varphi with the guess is easy or not
 					% and check if the test can be reduced to the one with the guess (ie iff phi_b = phi(d/d')o phi
-					%todo add input to the begenning of this algo
 					%$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
 					$res\gets\bot$\;\label{line:jsp}
 					$b\gets 0^{r'}\in\{0,1\}^{r'}$\;
@@ -931,7 +930,8 @@
 			the $d'-$torsion so we have $\ker\varphi[d']=\sigma_0(\ker\varphi)[d']$. 
 
 			Let us prove that $\omega(\ker\varphi)[d']=\ker\varphi'[d']$
-			We take a generator $P$ of $\ker\widehat\varphi$, since $\widehat\varphi\subseteq E[d]$ we can take
+			We take a generator $P$ of $\ker\widehat\varphi$, since $\ker\widehat\varphi\subseteq E[d]$
+			we can take
 			an order $d$ point $Q\in E[d]$ that is independant with $P$, since $\langle P\rangle$ and  $\langle
 			Q \rangle$ intersect trivially, the point  $R=\widehat\varphi(Q)$ is of order $d$, it also clear that
 			it belongs to the kernel of  $\varphi$ since $\varphi(R)=\varphi\circ\widehat\varphi(Q)=[d]Q=0$.
@@ -962,7 +962,7 @@
 			invariant subspace for $(\widehat\sigma_0\circ\omega)$ acting on $E_0[l^{e'}]$.
 
 			This is not sufficient to compute directly the kernel of $\varphi_1$ as there are many invariant
-			subspaces in $E[d']$, the algorithm need to make guesses. it begins to compute all the candidates
+			subspaces in $E_0[d']$, the algorithm need to make guesses. it begins to compute all the candidates
 			for $\ker\varphi_1$ and then do a check.
 			%todo vraiment vérifier chaque courbe E si correct ou non 
 			
@@ -998,7 +998,7 @@
 			\paragraph{Guess check of $\varphi_1$}
 
 			If the codomain of $\varphi_1$ and the codomain of $\widehat\varphi_2$ are the same, then we can
-			build an isogeny $\varphi'=\varphi_2\circ\varphi_1$ of degree  $d'\times \frac{d}{d'}$ from curve
+			build an isogeny $\varphi'=\varphi_2\circ\varphi_1$ of degree  $d'\cdot \frac{d}{d'}$ from curve
 			$E_0$ to curve $E$ which is exactly the required output. The algorithm then computes the scaling
 			matrix that is compatible with the actual values of $\varphi'$ on the $N$-torsion.
 	%		The second check line \ref{line:hardcheck} 
