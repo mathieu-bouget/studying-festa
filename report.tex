@@ -28,6 +28,7 @@
 
 
 \newtheorem{problem}{Problem}
+\newtheorem{lemma}{Lemma}
 \tikzcdset{every label/.append style = {font = \large}}
 
 % No page number
@@ -66,7 +67,7 @@
 
 	\authorname{Mathieu Bouget}
 
-	\supervisors{Benjamin Wesolowski - UMPA}{Maria Cortes-Real Santos - UMPA}
+	\supervisors{Benjamin Wesolowski - UMPA}{Maria Corte-Real Santos - UMPA}
 
 	\locationinfo{UMPA}{ENS de Lyon}
 
@@ -80,9 +81,16 @@
 
 
 	Over the last decades, isogeny-based cryptography feeds hope to find efficient
-	quantum-resistant primitives because of the reasonable running time and size of keys. One
-	major candidate was the protocol SIDH \cite{SIDH} proposed in 2011 and relied on the following
-	statement.
+	quantum-resistant primitives because of the reasonable running time and size of keys. One fondamental
+	problem of isogeny is the plain isogeny problem, which is assumed hard even to quantum adversaries. 
+
+	\begin{problem}[Computational Supersingular Isogeny]\label{pb:CSSI}
+	Given two curves $E,E'$, find an isogeny $\varphi:E\to E'$ 
+	\end{problem}
+
+	However it is not possible to build protocol out of this problem as we need additionnal information
+	about the isogeny. The protocol SIDH proposed in \cite{sidh} in 2011 was one major candidate and
+	relies on the following problem, kwnon as isogeny interpolation.
 
 	\begin{problem}[SIDH Instance]\label{pb:sidh}
 	Given two curves $E,E'$ and $P,Q$ two independent points of smooth order $N$ and $\varphi(P),\varphi(Q)$
@@ -647,6 +655,33 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 				\paragraph{Getting $\varphi$ out of $\psi$}
 
 				\begin{algorithm}
+					\caption{Double Discrete Log}
+					\label{algo:ddlog}
+					\DontPrintSemicolon
+					\KwIn{A smooth number $l$, a basis $P,Q$ of  $E[l]$ and a point $R\in E[l]$}
+					\KwOut{Two numbers $m,n\in\mathbb Z_l$ such that $R=[m]P+[n]Q$}
+					Write $l$ as $\Pi_{i=1}^r l_i^{e_i}$\;
+					\For{$i=1$ \KwTo $r$}{
+					\For{$j=1$ \KwTo $e_i$}{
+						\todo{}
+					}
+				}
+				\end{algorithm}
+				\begin{algorithm}
+					\caption{EigenVals}
+					\label{algo:eigenvals}
+					\DontPrintSemicolon
+					\KwIn{A smooth number $l$, a basis $P,Q$ of  $E[l]$ and a point $R\in E[l]$}
+					\KwOut{Two numbers $m,n\in\mathbb Z_l$ such that $R=[m]P+[n]Q$}
+					Write $l$ as $\Pi_{i=1}^r l_i^{e_i}$\;
+					\For{$i=1$ \KwTo $r$}{
+					\For{$j=1$ \KwTo $e_i$}{
+						\todo{}
+					}
+				}
+				\end{algorithm}
+
+				\begin{algorithm}
 					\caption{Extraction of $\varphi$ from $\psi$}
 					\label{algo:extraction}
 					\DontPrintSemicolon
@@ -655,23 +690,32 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 
 					$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
 					$I,J\gets \mathbf{TorGen}(E,d)$\;
+					$I',J'\gets \mathbf{TorGen}(E',d)$\;
+					$(\mathbf H_{11},\mathbf H_{21})\gets\mathbf{DoubleDiscreteLog}(\psi(I),I',J',l)$\;
+					$(\mathbf H_{12},\mathbf H_{22})\gets\mathbf{DoubleDiscreteLog}(\psi(J),I',J',l)$\;
 					%Compute $\mathbf H$ the matrix of $\psi$ in the basis $(I,J)$\;
-					$H\gets \mathrm{Mat}_{(I,J)}(\psi)$\;
 					%Compute minimum $u|d$ such that $\psi([u]I)=0$ \;
 					%Compute minimum $v|d$ such that $\psi([v]J)=0$ \;
 					%$d'\gets \gcd(\frac{d}{u},\frac{d}{v})$\;
 					% Faut-il à la place seulement calculer la matrice de $\psi$ sur E[d] dans la base ?
 					% Et ensuite prendre le pgcd des coeffs ?
-					$d'\gets \gcd(H_{11},H_{12},H_{21},H_{22})$ 
+					$d'\gets \gcd(\mathbf	H_{11},\mathbf H_{12},\mathbf H_{21},\mathbf H_{22})$ \label{line:dprime}
 
 					Compute $P\in\langle I,J\rangle$ of order $d$ such that $\psi(P)=0$\;
-					Construct the isogeny $\varphi_{cyclic}$ of kernel  $\langle [d']P\rangle$\;
+					Construct the isogeny $\widehat\varphi_2$ of kernel  $\langle [d']P\rangle$\;
 
 					Write $d'$ as $\Pi_{i=1}^{r'}l_i^{e'_i}$ with $l_i$ odd primes and pairwise distincts\;
 					\For{$i\gets 1$ \KwTo  $r'$}{
 						$P_i,Q_i\gets \mathbf{TorGen}(E_0,l_i^{e'_i})$\;
-						$M_i\gets \mathrm{Mat}_{(P_i,Q_i)}(\widehat\sigma_0\circ\omega)$\;
-						$\lambda_{i,0},\lambda_{i,1}\gets \mathbf{Eigenvals}(M_i)$\; % poly caractéristique ??
+						%$M_i\gets \mathrm{Mat}_{(P_i,Q_i)}(\widehat\sigma_0\circ\omega)$\;
+					$(\mathbf H_{i11},\mathbf
+					H_{i21})\gets\mathbf{DoubleDiscreteLog}((\widehat\sigma_0\circ\omega(I))
+					,I,J,l_i^{e_i})$\;
+					$(\mathbf H_{i12},\mathbf
+					H_{i22})\gets\mathbf{DoubleDiscreteLog}((\widehat\sigma_0\circ\omega(J))
+					,I,J,l_i^{e_i})$\;
+					%$(\mathbf M_{12},\mathbf M_{22})\gets\mathbf{DoubleDiscreteLog}(\psi(J),I',J',l)$\;
+						$\lambda_{i,0},\lambda_{i,1}\gets \mathbf{Eigenvals}(\mathbf H_i)$\; % poly caractéristique ??
 						Find $L_{i,0}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,0}\mathrm{Id})$\;
 						Find $L_{i,1}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,1}\mathrm{Id})$\;
 
@@ -680,21 +724,28 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					%TODO check if mixing the already known compoenent of varphi with the guess is easy or not
 					% and check if the test can be reduced to the one with the guess (ie iff phi_b = phi(d/d')o phi
 					$res\gets\bot$\;
-					$b\gets 0$\;
-					$P',Q'\gets \varphi_{cyclic}(P),\varphi_{cyclic}(Q)$\;
+					$b\gets 0^{r'}\in\{0,1\}^{r'}$\;
+					$P',Q'\gets \widehat\varphi_2(P),\widehat\varphi_2(Q)$\;
 					\While{$res\neq\top$ and $b<2^{r'}$}{
-						$S_b,T_b\gets\varphi_b(S),\varphi_b(T)$ where $\varphi_b$ is the isogeny such that, for each $1\leq i\leq r'$, $\ker(\varphi_b)[l_i^{e'_i}]=\langle L_{i,b[i]}\rangle$\;
-						$\alpha_b,\beta\gets \log_{P'}(S_b),\log_{Q'}(T_b)$\;
-						\If{$\alpha_b\cdot \beta_b = \det A$}{
+						\textbf{Let} $\varphi_1$ be the isogeny that verifies $\forall i\in[1,r'],
+						\ker\varphi_1[l_i^{e'_i}] =\langle L_{i,b[i]}\rangle$ \textbf{in}\;
+						 $\quad\quad S_1,T_1\gets\varphi_1(S),\varphi_1(T)$\;
+
+						$\alpha_1,\beta_1\gets \log_{P'}(S_1),\log_{Q'}(T_1)$\;
+						\If{$\alpha_1\cdot \beta_1 = \det A$}{
 							$res\gets\top$
 						}\Else{
-							$b\gets b+1$	
+							$b\gets b+1$ in binary operation	
 						}	
 					}
 					\If{$res=\top$}{
-						\Return  $\varphi$ and matrix $\mathrm{Diag}(\alpha_b,\beta_b)$ where $\varphi$ is the isogeny
-						with $\varphi_b$ as  $d'$ component and $\varphi_{cyclic}$ as $d/d'$
-						component \;
+						%Construct the isogeny $\varphi=\varphi_1\circ\varphi_2$ \;
+						$\varphi\gets\varphi_1\circ\varphi_2$\;
+						$\mathbf A\gets \mathrm{Diag}(\alpha,\beta)$\;
+						\Return  $\varphi,\mathbf A$ \;
+						%\Return  $\varphi$ and matrix $\mathrm{Diag}(\alpha_b,\beta_b)$ where $\varphi$ is the isogeny
+						%with $\varphi_b$ as  $d'$ component and $\varphi_{cyclic}$ as $d/d'$
+						%component \;
 					}\Else{
 						\Return $\bot$
 					}
@@ -731,10 +782,14 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			%TODO ajouter hypothèse sigma_0 rond omega cyclique
 			%TODO changer les E en E truc, changer $d$
 			\subsubsection{Computation of $d'$}
-			We give the proof that the algorithm 2 return the maximal integer $d'|d$ such that \[
+			We prove here the following lemma
+			\begin{lemma}
+				The integer $d'$ computed line \ref{line:dprime} is the maximal integer $d'|d$ such that\[
 				E[d']\subseteq \ker(\psi)
 			\] 
-			We have the matrix $\mathbf H$ that represents $\psi$ in the basis $(I,J)$ %TODO base d'arrivée ???
+
+			\end{lemma}
+			We have the matrix $\mathbf H$ that represents $\psi$ in the basis $(I,J),(I',J')$ 
 			 \[
 				 \mathbf H = \begin{pmatrix} a &  b \\ c & d \end{pmatrix} 
 			\] 
@@ -775,8 +830,23 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			algorithm gives a part of order $\frac{d}{d'}$ of the $\ker\widehat\varphi$.
 			
 
+			\subsubsection{Decompositon of $\varphi$ }
+			
+			The rest of the algorithm is divided in two parts : computation of 
+			$\ker\widehat\varphi[\frac{d}{d'}]$ and the computation of $\ker\varphi[d']$. Here is the proof
+			that computing these two sets gives at the end the full knwoledge of $\ker\varphi$.
+			The isogeny $\varphi$ is cyclic of degree $d$, so it can be factorized into 
+
+			$$\varphi=\varphi_2\circ\varphi_1$$ with  $\deg\varphi_1 = d'$ and  $\deg\varphi_2 = \frac{d}{d'}$.
+			Then we have $\ker\varphi_1\subseteq\ker\varphi$ and also $\ker\varphi_1\subseteq E[d']$ 
+			so we have  $\ker\varphi_1 =\ker\varphi[d']$ when taking its degree into account.
+			The dualization $\widehat\varphi = \widehat\varphi_1\circ\widehat\varphi_2$ gives on the other
+			hand $\ker\widehat\varphi_2=\ker\varphi[\frac{d}{d'}]$. Knowign the kernel of $\widehat\varphi_2$
+			we can compute the kernel of $\varphi_2$ so having these two components give exactly the isogeny
+			$\varphi$.
 			\subsubsection{Computing $\ker\varphi[d']$}
 
+			\paragraph{Caracterization of $\ker\varphi$}
 			First, we give here a complete proof of the fact that \[
 				(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']
 			\] 
@@ -811,25 +881,41 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			\] 
 			and applying $\widehat\sigma_0$ leads to
 			$(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']$.
-
 			This equality holds when considering prime factors $l^{e'}$ of $d'$ so $\ker\varphi$ is an
 			invariant subspace for $(\widehat\sigma_0\circ\omega)$ acting on $E_0[l^{e'}]$.
+			
+			\paragraph{Finding invariant subspaces}
+
+			As in the $\cite{polyCIST}$, the algorithm try to make guess about the values of $\ker\varphi[d']$,
+			since this isogeny is separable and cyclic,
+			all subgroups $\ker\varphi[l^{e'}]$ are cyclic of order $l^{e'}$ invariant by
+			$\widehat\sigma_0\circ\omega$ where $l^{e'}$ is a prime power dividing $d'$. 
+			If we take $P$ of order $l^{e'}$ in $\ker\varphi$, we have $R\in\ker\varphi[l^{e'}]$ such that
+			$P=(\widehat\sigma_0\circ\omega)(R)$, since $P$ is a generator of $\ker\varphi[l^{e'}]$ we have an
+			integer $\lambda$ such that $R=[\lambda]P$ and we deduce that $\langle P \rangle$ is in the
+			eigenspaces with eigenvalue $\lambda$. 
+
+			\begin{lemma}
+				When the the matrix of $\varphi$ in the $l^{e'}$-torsion of $E_0$ is diagonalizable, the options for
+				$\ker\varphi E_0[l^{e'}]$ are the two eigenspaces
+			\end{lemma}
+			
+			According to the authors of $\cite{polyCIST}$, this is almost always the case. This in fact linked
+			to the fact that $l$ splits or not in $\mathbb Z[\widehat\sigma_0\circ\omega]$ but its very
+			technical so we will consider that our algorithm will simply fail if the matrix is not
+			diagonalizable.
+
+			So at the end of line %todo
+			, the algorithm either fail or got all possibles $\ker\varphi[l^{e'}]$ for all prime powers of
+			$d'$.
+
+			
 			%TODO ajouter pairwise dans les hypothèse, les mêmes que celles dans le papier, voir si certaines
 			%peuvent être supprimées
 			
 
 		%TODO computing eigenvalues ? relèvement de Hensel ok ?	
 
-
-				\todo{Verify correctness}
-				Can we can get $\varphi$ of degree $d$ (or get $\ker\varphi[d]$) when we
-				know
-				\begin{itemize}
-					\item $\ker\widehat\varphi[\frac{d}{d'}]$ (component $d/d'$ of the dual)
-					\item $\ker\varphi[d']$ (component $d'$ of $\varphi$)
-				\end{itemize}
-				Computation is not that difficult after that
-					
 				\subsection{Running time}
 
 
