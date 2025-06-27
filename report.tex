@@ -104,8 +104,9 @@
 	design of the protocols, but the main idea is that giving scaled values $\lambda_1\varphi(P)$ and
 	 $\lambda_2\varphi(Q)$ should be safer, even if it makes protocols more complex.
 
-	Among them, there is FESTA proposed in \cite{FESTA} which has the
-	particularity to use the attack against SIDH in its decryption algorithm. The goal of this internship
+	Among them, there is a public encryption scheme FESTA proposed in \cite{FESTA} which has the
+	particularity to use the attack against SIDH in its decryption algorithm.
+	The goal of this internship
 	was to focus on the security aspect of FESTA and its specific problem. To do so, I worked on an attack
 	against the scaled torsion problem proposed in \cite{polyCIST}. The goal was to understand the strategy
 	of the attack and to describe precisely the attack in a favorable setting to have a clear statement in
@@ -230,7 +231,7 @@
 	and strategies to break a generic SIDH instance, I introduce a generic condition
 	on the degree of the secret isogeny and the torsion of $E_0$ that is sufficient
 	to find $\varphi$ according to an generic attack proposed in {\cite{sidhpolyattack}}. 
-	\begin{theorem}
+	\begin{theorem}\label{thm:sidh}
 		Let $\varphi:E_0 \to E$ be a secret degree disogeny (where $d$
 		is known) and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
 		where $N$ and $d$ are assumed smooth and coprime, and $N^2 > 4d$. Let $\mathbb{F}_q$ be the
@@ -247,7 +248,7 @@
 	Giving the images of torsion points was considered safe until a mathematical result based
 	on elliptic curve product and higher-dimensionnal isogenies gave ways to recover
 	the secret isogeny in classical polynomial-time.
-	We recall here a result that make torsion-point attacks possibles.
+	We recall here a lemma proved by Kani in \cite{kani} that make torsion-point attacks possibles.
 	%TODO trouver formulation du thm
 	\begin{theorem}
 		\label{thm:twoiso}
@@ -271,10 +272,17 @@
 		\end{theorem}
 
 
-		In \cite{directkeysidh} and in attacks on SIDH, discussion are about finding an
-		isogeny $\varphi_f$ in order to use this theorem, once the isogeny has been found
-		we juste need to evaluate a two-dimensions isogeny in order to recover the kernel
-		of the secret isogeny $\varphi_A$.
+		In \cite{directkeysidh} and in attacks on SIDH, a equivalent version of this theorem
+		is used, where the kernel of $\Phi$ is $\{([N_2]\times\varphi_{N_2}\circ\widehat\varphi_{N_1})
+			\circ (P,P)|P\in E_1[N_1+N_2]\}$. If we 
+		say that $\varphi_{N_2}$ is the secret isogeny and that the image of the $N$-torsion under
+		$\varphi_{N_1}$ is given with $N>N_2$. Then if we find an isogeny $\varphi_{N_2}$ of degree 
+		$N_1 := N - N_2$ fro  $E_0$ to any curve $E_1$, then we know the kernel of the two-dimension
+		isogeny $\Phi$ and we are able to recover $\widehat\varphi_{N_2}$. The condition $N>N_2$ seems to
+		be restrictive because it makes the degree of the secret isogeny smaller than the torsion-point
+		information we give, but decomposing the secret isogeny into smaller one and using this technique to
+		recover them one by one is efficent. The trickiest part of SIDH attack is to find an isogeny with the
+		wanted degree $N - N_2$ is detailed in the papers we mentionned about SIDH.
 
 
 		\section{FESTA}
@@ -365,7 +373,7 @@
 		$\varphi_1:E_0\to E_1$ and $\varphi_2:E_A\to E_2$ plus a scaling matrix $\mathbf B$.
 		Using a representation of the isogenies using a generator of their kernel described
 		in a deterministicaly generated basis, the domain of $f_\mathtt{pk}$ is
-		$$\mathbb{Z}/d_1\mathbb{Z}\times\mathbb{Z}/d_2\mathbb{Z}\times\mathcal M_b$$
+		$$\mathbb{Z}/d_1\mathbb{Z}\times\mathbb{Z}/d_2\mathbb{Z}\times\mathcal M_n$$
 		where $\mathcal M_b$ is the set of scaling matrices.
 		The output of the function are curves $E_1$ and $E_2$ plus additionnal information
 		about $\varphi_1$ and $\varphi_2$, that is some torsion points scaled with $\mathbf B$.
@@ -449,21 +457,20 @@
 		$$
 
 		%connaissance des degrés suffisantes ?
-		\subsection{Parameters}
 
-		\todo{parameters}
+		\section{Lollipop attack}
 
-		\section{Attacks}
-		The security of FESTA is based on the hardness of isogeny interpolation when the
-		images of the torsion are scaled with some matrix. Breaking this problem would breaks
-		the entire protocol, however there is a stronger assumption that is made in FESTA which
-		is that there are two interpolation with the same scaling matrix.
+		The security of FESTA is highly linked to the CIST problem and I studied the scheme proposed 
+		by Castryck and Vercauteren in \cite{polyCIST} that improves the lollipop attack proposed in 
+		\cite{lollipop}. The method used to get rid of the scaling matrix is particularly interesting.
+		However, this attack is quite complex and a first work was to understand clearly the attack and the
+		intuition behind. There is no clear statement in \cite{polyCIST} because there are a lot of possible
+		settings and having a statement for each is difficult. I introduce here the idea behind the lollipop
+		attack and the upgraded version.
+		
 
 
-		\subsection{Lollipop Attack}
-		Even if FESTA relies on a stronger assumption than this problem, there is a major intrest
-		in sutdying current strategies used to break a CIST instance. I briefly introduce
-		the one provided in \cite{polyCIST}.
+		\subsection{Simple lollipop Attack}
 
 		We want to recover a secret isogeny $\varphi:E_0\to E$ of known degree $d$. We are given
 		the points $S,T\in E[N]$ such that
@@ -514,7 +521,12 @@
 			\end{tikzcd}
 		\end{center}
 
-		We need to controll the degree of $\omega$ in order to apply the SIDH attack. There is an
+		\subsection{Ugraded lollipop}
+		The main bottleneck of the previous approach is the condtion on the degree of 
+		$\varphi\circ\omega\circ\widehat\varphi$ which should not be to large to apply SIDH attack so
+		we need in fact to controll the degree of $\omega$, the one we can controll the other beeing $d$
+		which is
+		given as input, in order to apply the SIDH attack. There is an
 		improvement of this technique that reduces the degree in some cases. We now set $\omega$ to
 		be an isogeny from $E_0$ to some other curve $E$ and take another isogeny $\sigma_0:E_0\to E'_0$.
 		We control the endomorphism $\omega'=\widehat\sigma_0\circ\omega$ by the matrix $\mathbf M$ :
@@ -570,21 +582,32 @@
 																									&=&[d]\mathbf{M}\sigma\begin{pmatrix} S \\ T \end{pmatrix} 
 		\end{eqnarray*}
 
-		\subsubsection{Application to FESTA}
-		In FESTA, the secret matrix $\mathbf A$ is diagonnal so matrix $\mathbf M$ should
-		be either diagonnal in order to commute, that means that the  $P,Q$ are eigenvectors
-		of $\widehat\sigma_0\circ\omega$.
+%		\subsubsection{Application to FESTA}
+%		In FESTA, the secret matrix $\mathbf A$ is diagonnal so matrix $\mathbf M$ should
+%		be a diagonnal in order to commute, that means that the  $P,Q$ are eigenvectors
+%		of $\widehat\sigma_0\circ\omega$.
 
-\section{Attack description for FESTA}
+\section{Algorithm to attack FESTA}
 
-We give here a description of an algorithm that achieve an attack against FESTA in the case
-where we are given the two specific inputs $\sigma_0$ and $\omega$. 
 
+		It was also difficult to figure out what an actual algorithm that implement the attack could look
+		like so I focused on this aspect even if it is clear that the restrictive setting I've chosen does
+		not provide an attack for general setting of FESTA, it would be important in the research for more
+		general attack to know what we can get out of these particular situation.
+
+		In this section I givee a description of an algorithm that achieve an attack against FESTA in the
+		case where we are given the two specific inputs $\sigma_0$ and $\omega$, there are specific
+		requirements specified in the inputs section. We consider here that the secret scaling matrix of the
+		CIST instance given as input is diagonnal.
+
+		We also give detailed proofs of correctness of this algorithm to show that it performs the attack
+		described in \cite{polyCIST} correctly, in particular the trickiest part which is the extraction
+		of $\varphi$ out of $\psi$.
 
 		\subsection{Algorithm}
 
 
-		The attack proposed in the paper is summarized as the 3 following steps
+		We briefly recall how this attack is decomposed :
 		\begin{itemize}
 			\item Find good $\omega$ and good $\sigma_0$ 
 			\item Recover the isogeny $\psi$
@@ -647,8 +670,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					\begin{pmatrix} S' \\ T' \end{pmatrix} = \psi\begin{pmatrix} S \\ T \end{pmatrix} 
 				\]
 				The degree of $\psi=\varphi'\circ\omega\circ\widehat\varphi$ is $wd^2$ which is smaller than
-				$N^2$ and these are coprime so the polynomail SIDH attack is made possible to recover $\psi$ in
-				the form of an oracle.
+				$N^2$ and these are coprime so the polynomial SIDH attack is made possible to recover $\psi$ in
+				the form of an oracle, which is an algorithm that gives the image of any point $K$ under $\psi$.
 
 				%(Add conditions of success with N,d…)%TODO
 
@@ -671,8 +694,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 						$R',P',Q'\gets [l']R,[l']P,[l']Q$\;
 					\For{$j=e_i$ \KwTo $1$}{
 						\tcp{solving equation in $\mathbb Z_{l_u^{j+1-e_i}}^2$}
-						Find $(a,b)\in\mathbb Z_{l_u}^2$ that verifes $[l_u^{j}]R'
-						=[a+l_u m_u][l_u^{j}]P'+[b+l_u n_u][l_u^{j}]Q'$\;
+						Find $(a,b)\in\mathbb Z_{l_u}^2$ that verifes $[l_u^{j}]R' 
+						=[a+l_u m_u][l_u^{j}]P'+[b+l_u n_u][l_u^{j}]Q'$\; \label{line:exhausted}
 						$m_u\gets a + l_u m_u$\;
 						$n_u\gets b + l_u n_u$\;
 					}
@@ -688,14 +711,25 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					\KwIn{A prime power $s = l^{n}$ and a matrix $\mathbf M\in\mathcal M_2(\mathbb Z_s)$}
 					\KwOut{Eigenvalues of $\mathbf M$ or $\bot$ if fail}
 					$E\gets X^2-X\mathrm{tr}M+\det M$\;
-					\If{$E$ admit solutions in $\mathbb Z_l$}{
+					\If{$E=0$ admit solutions in $\mathbb Z_l$}{
 						$\lambda_1,\lambda_2\gets\mathbf{Roots}(E)$
 					}\Else{
 						\Return$\bot$
 					}
-					\For{$i=1$ \KwTo $n$}{
-						Try to find $a,b\in\mathbb Z_l$ solutions of $x^2-Tx+d=0$  \;
-						\todo{Relèvement Hensel}
+					\For{$i=2$ \KwTo $n$}{
+						Try to find $a,b\in\mathbb Z_l$ such that $E = (X-(\lambda_1 + al))(X-(\lambda_2 + bl))$\;
+						\label{line:exhausted_ev}
+						\If{$E$ admits solutions in  $\mathbb Z_{l^{i}}$}{
+							$\lambda_1\gets \lambda_1+al$	\;
+							$\lambda_2\gets \lambda_1+bl$	\;
+						}\Else{
+							\Return $\bot$
+						}
+					}
+					\If{$\lambda_1 \neq \lambda_2$}{
+						\Return $\lambda_1,\lambda_2$\;
+					}\Else{
+						\Return $\bot$
 					}
 				\end{algorithm}
 
@@ -745,7 +779,7 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					% and check if the test can be reduced to the one with the guess (ie iff phi_b = phi(d/d')o phi
 					%todo add input to the begenning of this algo
 					%$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
-					$res\gets\bot$\;
+					$res\gets\bot$\;\label{line:jsp}
 					$b\gets 0^{r'}\in\{0,1\}^{r'}$\;
 
 					%$S_2,T_2\gets \widehat\varphi_2(S),\widehat\varphi_2(T)$\;
@@ -808,8 +842,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			Since $N$ and $s$ are coprime, the number $s^{-1}$ is well-definied and it is possible to multiply
 			this equality with this value to get a propper SIDH instance.
 
-			We have $$\deg\psi=\deg\varphi'\deg\omega\deg\widehat\varphi=\deg\varphi\deg\omega\deg\varphi=sd^{2}$$
-			so considering $N^2\geq sd^2$ we have a valid polynomial attack that gives us access to $\psi$,
+			We have $$\deg\psi=\deg\varphi'\deg\omega\deg\widehat\varphi=\deg\varphi\deg\omega\deg\varphi=wd^{2}$$
+			so considering $N^2\geq wd^2$ we have a valid polynomial attack that gives us access to $\psi$,
 			there are several way to represent the result of this attack, it could be a description of
 			$\ker\psi$ which is equivalent to the access of an oracle of $\psi$.
 
@@ -906,8 +940,9 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			We know use the fact that $E[d']$ is a subgroup of $\ker\psi$, because the point $[\frac{d}{d'}]Q$
 			is of order $d'$ we have
 			\[
-				0=\psi([\frac{d}{d'}]Q) = \varphi'\circ\omega\circ \widehat\varphi[\frac{d}{d'}]Q
-				= \varphi'\circ\omega([\frac{d}{d'}]R)
+				0=\psi\left(\left[\frac{d}{d'}\right] Q\right) =
+				(\varphi'\circ\omega\circ \widehat\varphi)\left(\left[\frac{d}{d'}\right]Q\right)
+				= \varphi'\circ\omega\left(\left[\frac{d}{d'}\right]R\right)
 			\] so $\omega(\frac{d}{d'}R)\in\ker\varphi'$ and more generarly $\omega(\langle
 			\frac{d}{d'}R\rangle)\subseteq\ker\varphi'[d']$.
 			Let $R'=[\frac{d}{d'}]R$, it is an order $d'$ point that generates $\ker\varphi[d']$, since $d$ and
@@ -950,8 +985,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			According to the authors of $\cite{polyCIST}$, this is almost always the case. This in fact linked
 			to the fact that $l$ splits or not in $\mathbb Z[\widehat\sigma_0\circ\omega]$ but its very
 			technical so we will consider that our algorithm will simply fail if the matrix is not
-			diagonalizable. So at the end of line \ref{line:jsp}%todo
-			, the algorithm either fail or got all possibles $\ker\varphi[l^{e'}]$ for all prime powers of
+			diagonalizable. So before the line \ref{line:jsp},
+			the algorithm either fail or got all possibles $\ker\varphi[l^{e'}]$ for all prime powers of
 			$d'$.
 
 			We know that, in the favorable setting where all factors of $d'$ are odd and split in
@@ -977,11 +1012,51 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 				\subsection{Running time}
 
 
-				\todo{Running Time}
+				I prove here that the only thing that could prevent this attack from running in polynomial time
+				in the size of the degree $d$ of the 
+				secret input, which corresponds to the size of the problem we give as input, is the size of $d'$.
+				In the general case,
+				a known isogeny of degree can be evaluated in time $0(d)$ which si exponential in the size of the
+				degree $d$. However, in cryptography we work mostly with isogeny of smooth degree which can be
+				decomposed into small isogenies and computed step by step so the evaluation is polynomial in the
+				size of the smoothness bound.
 
+				%todo add condition on "easy computable"
+				During the computation of $\psi$, there are evaluation of isogenies $\sigma$,$\omega$ and
+				$\sigma_0$. As they are all given as input we can consider that this is the same situation as if
+				the attack would have access to an oracle. Once the SIDH instance has been computed, the attack
+				against this attack to recover the isogeny $\psi$ has an high cost and this is why 
+				there is a conditon on the degree of $\omega$ to ensure that $\deg\psi \leq N^2$ so the attack
+				against SIDH runs polynomially in this setting according to Theorem \ref{thm:sidh}.
+				
+			\paragraph{About $d'$}
+				The core attack is based on the fact that the more $\psi$ is cyclic the more is computed during
+				the computation of $\varphi_2$ because the more information $\psi$ reveals about $\varphi$.
+				When $\psi$ does not reveal a lot of thing about $\varphi$, it is linked to a particular way the
+				endomorphism $\widehat\sigma_0\circ\omega$ interract with $\varphi$ and its kernel and we can
+				recover partial information that is used to make guesses to compute $\varphi_1$. 
+
+				The time to perform the first step is negligible compared to the running time of the step with
+				the guess and we need $d'$ to be as small as possible. An estimation of $r'$ the number of prime
+				factor in $d'$ is given in \cite{polyCIST} and leads to $O(\log d)$ which is sufficent to affirm
+				that the whole step is polynomial in most cases but its largely heuristic.
+				However, this probability estimation is made 
+				with fixed $\varphi$ and varying $\widehat\sigma_0\circ\omega$ so it doesn't prevent the
+				algorithm presented here to have a non-polynomial time and its raise the issue to have a complete
+				attack that would produce the additionnal isogenies given as input here.
+				
+				\paragraph{External functions} We used an algorithm $\mathbf{TorGen}$ that is polynomial and
+				deterministic and used in \cite{FESTA}. The two other algorithms \ref{algo:eigenvals} and
+				\ref{algo:ddlog} are exponential for non-smooth number but here they both divide the problem into
+				problems in the size of their prime factors so the exhaustive search in \ref{line:exhausted} and
+				\ref{line:exhausted_ev} are done for very small set so at the end they are both polynomial-time
+				when used in smooth situation which is always the case when they are called in algorithm 
+				\ref{algo:extraction}.
 
 				\section{Conclusion}
 
+				
+				\todo{Conclusion}
 
 				\bibliographystyle{unsrt}
 				\bibliography{biblio}
