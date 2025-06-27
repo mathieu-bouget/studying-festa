@@ -653,6 +653,10 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 				%(Add conditions of success with N,d…)%TODO
 
 				\paragraph{Getting $\varphi$ out of $\psi$}
+				Since this operation is much more technical that the previous one, I've written the algorithm
+			\ref{algo:extraction} which gives $\varphi$. It uses the algorithm \ref{algo:ddlog} to compute
+			the double discrete log, that is the integers $m,n$ where given points $P,Q,R$ are such that
+			$R=mP+nQ$, this problem in a group of smooth order is really efficient as usual discrete log.
 
 				\begin{algorithm}
 					\caption{Double Discrete Log}
@@ -660,25 +664,39 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					\DontPrintSemicolon
 					\KwIn{A smooth number $l$, a basis $P,Q$ of  $E[l]$ and a point $R\in E[l]$}
 					\KwOut{Two numbers $m,n\in\mathbb Z_l$ such that $R=[m]P+[n]Q$}
+					$m,n\gets 0$\;
 					Write $l$ as $\Pi_{i=1}^r l_i^{e_i}$\;
-					\For{$i=1$ \KwTo $r$}{
-					\For{$j=1$ \KwTo $e_i$}{
-						\todo{}
+					\For{$u=1$ \KwTo $r$}{
+						$l'\gets \Pi_{i\neq u}l_i^{e_i}$\; \tcp{solving equation in $\mathbb Z_{l_u^{e_u}}^2$}
+						$R',P',Q'\gets [l']R,[l']P,[l']Q$\;
+					\For{$j=e_i$ \KwTo $1$}{
+						\tcp{solving equation in $\mathbb Z_{l_u^{j+1-e_i}}^2$}
+						Find $(a,b)\in\mathbb Z_{l_u}^2$ that verifes $[l_u^{j}]R'
+						=[a+l_u m_u][l_u^{j}]P'+[b+l_u n_u][l_u^{j}]Q'$\;
+						$m_u\gets a + l_u m_u$\;
+						$n_u\gets b + l_u n_u$\;
 					}
+					$m \gets m + l'm_u$\;
+					$n \gets n + l'n_u$\;
 				}
+				\Return $m,n$
 				\end{algorithm}
 				\begin{algorithm}
-					\caption{EigenVals}
+					\caption{Eigenvals}
 					\label{algo:eigenvals}
 					\DontPrintSemicolon
-					\KwIn{A smooth number $l$, a basis $P,Q$ of  $E[l]$ and a point $R\in E[l]$}
-					\KwOut{Two numbers $m,n\in\mathbb Z_l$ such that $R=[m]P+[n]Q$}
-					Write $l$ as $\Pi_{i=1}^r l_i^{e_i}$\;
-					\For{$i=1$ \KwTo $r$}{
-					\For{$j=1$ \KwTo $e_i$}{
-						\todo{}
+					\KwIn{A prime power $s = l^{n}$ and a matrix $\mathbf M\in\mathcal M_2(\mathbb Z_s)$}
+					\KwOut{Eigenvalues of $\mathbf M$ or $\bot$ if fail}
+					$E\gets X^2-X\mathrm{tr}M+\det M$\;
+					\If{$E$ admit solutions in $\mathbb Z_l$}{
+						$\lambda_1,\lambda_2\gets\mathbf{Roots}(E)$
+					}\Else{
+						\Return$\bot$
 					}
-				}
+					\For{$i=1$ \KwTo $n$}{
+						Try to find $a,b\in\mathbb Z_l$ solutions of $x^2-Tx+d=0$  \;
+						\todo{Relèvement Hensel}
+					}
 				\end{algorithm}
 
 				\begin{algorithm}
@@ -687,9 +705,8 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					\DontPrintSemicolon
 					\KwIn{An oracle of $\psi$}
 					\KwOut{The isogeny $\varphi$ with the scaling matrix $\mathbf A$ or $\bot$}
-
-					$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
-					$I,J\gets \mathbf{TorGen}(E,d)$\;
+					\tcp{Computing $d'$}
+					$I,J\gets \mathbf{TorGen}(E,d)$ \;
 					$I',J'\gets \mathbf{TorGen}(E',d)$\;
 					$(\mathbf H_{11},\mathbf H_{21})\gets\mathbf{DoubleDiscreteLog}(\psi(I),I',J',l)$\;
 					$(\mathbf H_{12},\mathbf H_{22})\gets\mathbf{DoubleDiscreteLog}(\psi(J),I',J',l)$\;
@@ -701,9 +718,12 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					% Et ensuite prendre le pgcd des coeffs ?
 					$d'\gets \gcd(\mathbf	H_{11},\mathbf H_{12},\mathbf H_{21},\mathbf H_{22})$ \label{line:dprime}
 
+					\tcp{Computing $\widehat\varphi_2$}
 					Compute $P\in\langle I,J\rangle$ of order $d$ such that $\psi(P)=0$\;
-					Construct the isogeny $\widehat\varphi_2$ of kernel  $\langle [d']P\rangle$\;
+					Construct the isogeny $\widehat\varphi_2:E\to E_2$
+					of kernel  $\langle [d']P\rangle$\;\label{line:phi2}
 
+					\tcp{Computing $\varphi_1$}
 					Write $d'$ as $\Pi_{i=1}^{r'}l_i^{e'_i}$ with $l_i$ odd primes and pairwise distincts\;
 					\For{$i\gets 1$ \KwTo  $r'$}{
 						$P_i,Q_i\gets \mathbf{TorGen}(E_0,l_i^{e'_i})$\;
@@ -716,31 +736,45 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					,I,J,l_i^{e_i})$\;
 					%$(\mathbf M_{12},\mathbf M_{22})\gets\mathbf{DoubleDiscreteLog}(\psi(J),I',J',l)$\;
 						$\lambda_{i,0},\lambda_{i,1}\gets \mathbf{Eigenvals}(\mathbf H_i)$\; % poly caractéristique ??
-						Find $L_{i,0}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,0}\mathrm{Id})$\;
-						Find $L_{i,1}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,1}\mathrm{Id})$\;
+						Find $L_{i,0}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,0}\mathrm{Id})$\;\label{line:L1}
+						Find $L_{i,1}$ of order $l_i^{e'_i}$ in $\ker(M_i-\lambda_{i,1}\mathrm{Id})$\;\label{line:L2}
 
 						%eigenspaces of $M_i$ using linear algebra on ring $\mathbb{Z}/l_i^{e'_i}\mathbb{Z}$\;
 					}
 					%TODO check if mixing the already known compoenent of varphi with the guess is easy or not
 					% and check if the test can be reduced to the one with the guess (ie iff phi_b = phi(d/d')o phi
+					%todo add input to the begenning of this algo
+					%$\det A\gets (\log_{e(P,Q)}e(S,T))/d$\;
 					$res\gets\bot$\;
 					$b\gets 0^{r'}\in\{0,1\}^{r'}$\;
-					$P',Q'\gets \widehat\varphi_2(P),\widehat\varphi_2(Q)$\;
-					\While{$res\neq\top$ and $b<2^{r'}$}{
-						\textbf{Let} $\varphi_1$ be the isogeny that verifies $\forall i\in[1,r'],
-						\ker\varphi_1[l_i^{e'_i}] =\langle L_{i,b[i]}\rangle$ \textbf{in}\;
-						 $\quad\quad S_1,T_1\gets\varphi_1(S),\varphi_1(T)$\;
 
-						$\alpha_1,\beta_1\gets \log_{P'}(S_1),\log_{Q'}(T_1)$\;
-						\If{$\alpha_1\cdot \beta_1 = \det A$}{
-							$res\gets\top$
-						}\Else{
+					%$S_2,T_2\gets \widehat\varphi_2(S),\widehat\varphi_2(T)$\;
+					\While{$res\neq\top$ and $b<2^{r'}$}{
+						\textbf{Let} $\varphi_1:E_0\to E_1$ be the isogeny that verifies $\forall
+						i\in[1,r'],
+						(\ker\varphi_1)[l_i^{e'_i}] =\langle L_{i,b[i]}\rangle$\;\label{line:makeguess}
+						
+						 %$\quad\quad P_1,Q_1\gets\varphi_1(P),\varphi_1(Q)$\;
+
+						 %$\alpha_1,\beta_1\gets \log_{\frac{d}{d'}P_1}(S_2),\log_{\frac{d}{d'}Q_1}(T_2)$
+						 %\tcp{to test if $\widehat\varphi_2\circ\varphi=[d/d']\varphi_1$}
+						%\If{$\alpha_1\cdot \beta_1 = \det A \mod d'$}{
+						\If{$E_1 = E_2$}{
+							%$P_2,Q_2 \gets \varphi_2(P_1),\varphi_2(Q_1)$\;
+						 %$\alpha,\beta\gets \log_{P}(S),\log_{Q_2}(T)$
+						 %\tcp{to test if $\varphi=\varphi_2\circ\varphi_1$}
+						 %\If{$\alpha\cdot \beta = \det A$}{ \label{line:hardcheck}
+							$\varphi\gets\varphi_2\circ\varphi_1$\;
+						 $\alpha,\beta\gets \log_{\varphi(P)}(S),\log_{\varphi(Q)}(T)$\;
+							$res\gets\top$\;
+						%	} 
+						}
+						\Else{
 							$b\gets b+1$ in binary operation	
 						}	
 					}
 					\If{$res=\top$}{
 						%Construct the isogeny $\varphi=\varphi_1\circ\varphi_2$ \;
-						$\varphi\gets\varphi_1\circ\varphi_2$\;
 						$\mathbf A\gets \mathrm{Diag}(\alpha,\beta)$\;
 						\Return  $\varphi,\mathbf A$ \;
 						%\Return  $\varphi$ and matrix $\mathrm{Diag}(\alpha_b,\beta_b)$ where $\varphi$ is the isogeny
@@ -751,12 +785,14 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 					}
 				\end{algorithm}
 
-				In algorithm \ref{algo:extraction} there is an explicit method to get $\varphi$.
 
 
 
 				\subsection{Correctness}
 %TODO change "small" in the inputs to the precise degree we need
+				We give here a proof that the algorithm always give the correst isogeny or $\bot$ when the
+				given CIST instance is correct and additionnal input satisifies the required conditions
+				mentionned before.
 
 				\subsubsection{Computing $\psi$}
 				We assume we are given a valid CIST instance, the set $X$ of possible scaling matrices is the
@@ -815,20 +851,6 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			$E[d]\cong \mathbb Z_d \times \mathbb Z_d$ so the fact $\ker\psi[d]$ is a subset of this group means
 			that it is a form $\mathbb Z_k \times \mathbb Z_d$ with  $k|d$ from the theorem of abelian
 			structures. Then the maximality of $d'$ as the torsion included in the kernel gives $k=d'$.
-			\subsubsection{Computing $\ker\widehat\varphi[\frac{d}{d'}]$}
-
-			%TODO prove ker(psi)[d] = Zd' x Zd
-			Considering $\psi=\varphi'\circ\omega\circ\widehat\varphi$, we have
-			$\ker\widehat\varphi\subseteq\ker\psi$
-			so  $\ker\widehat\varphi [\frac{d}{d'}]\subseteq \ker\psi[\frac{d}{d'}]$.
-			Since $\varphi$ is cyclic, its dual $\widehat\varphi$ is cyclic too so we can consider a generator
-			$P$ of $\ker\widehat\varphi$, its a point of order $d$ and belongs to $\ker\psi[d]$ which is
-			isomorphic to $\mathbb Z_{d'} \times \mathbb Z_d$ so $d'P$ is of the form $(d'u,d'v)=(0,vd')$ in
-			this structure where $v$ is invertible mod $d$ (it means that $v$ is a generator of $\mathbb Z_d$.
-			Any point $R$ of order $d$ of $\ker\psi[d]$ come into the form $(0,v'd')$  after multiplication by
-			$d'$ so  $d'R$ belongs to $\langle d'P\rangle$, moreover  $d'R$ is of order $\frac{d}{d'}$ so the
-			algorithm gives a part of order $\frac{d}{d'}$ of the $\ker\widehat\varphi$.
-			
 
 			\subsubsection{Decompositon of $\varphi$ }
 			
@@ -844,9 +866,29 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			hand $\ker\widehat\varphi_2=\ker\varphi[\frac{d}{d'}]$. Knowign the kernel of $\widehat\varphi_2$
 			we can compute the kernel of $\varphi_2$ so having these two components give exactly the isogeny
 			$\varphi$.
-			\subsubsection{Computing $\ker\varphi[d']$}
 
-			\paragraph{Caracterization of $\ker\varphi$}
+			%\subsubsection{Computing $\ker\widehat\varphi[\frac{d}{d'}]$}
+			\subsubsection{Computing $\widehat\varphi_2$}
+
+			We prove here that the isogeny computed line \ref{line:phi2} corresponds to $\varphi_2$.
+			%TODO prove ker(psi)[d] = Zd' x Zd
+			Considering $\psi=\varphi'\circ\omega\circ\widehat\varphi$, we have
+			$\ker\widehat\varphi\subseteq\ker\psi$
+			so  $\ker\widehat\varphi [\frac{d}{d'}]\subseteq \ker\psi[\frac{d}{d'}]$.
+			Since $\varphi$ is cyclic, its dual $\widehat\varphi$ is cyclic too so we can consider a generator
+			$P$ of $\ker\widehat\varphi$, its a point of order $d$ and belongs to $\ker\psi[d]$ which is
+			isomorphic to $\mathbb Z_{d'} \times \mathbb Z_d$ so $d'P$ is of the form $(d'u,d'v)=(0,vd')$ in
+			this structure where $v$ is invertible mod $d$ (it means that $v$ is a generator of $\mathbb Z_d$.
+			Any point $R$ of order $d$ of $\ker\psi[d]$ come into the form $(0,v'd')$  after multiplication by
+			$d'$ so  $d'R$ belongs to $\langle d'P\rangle$, moreover  $d'R$ is of order $\frac{d}{d'}$ so the
+			algorithm gives a part of order $\frac{d}{d'}$ of the $\ker\widehat\varphi$.
+			So the instruction in line \ref{line:phi2}	gives an isogeny whose kernel is
+			$\ker\widehat\varphi[\frac{d}{d'}]$ which is the definition of $\widehat\varphi_2$.
+			
+			%\subsubsection{Computing $\ker\varphi[d']$}
+			\subsubsection{Computing $\varphi_1$}
+
+			\paragraph{Caracterization of $\ker\varphi_1$}
 			First, we give here a complete proof of the fact that \[
 				(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']
 			\] 
@@ -883,10 +925,15 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 			$(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']$.
 			This equality holds when considering prime factors $l^{e'}$ of $d'$ so $\ker\varphi$ is an
 			invariant subspace for $(\widehat\sigma_0\circ\omega)$ acting on $E_0[l^{e'}]$.
+
+			This is not sufficient to compute directly the kernel of $\varphi_1$ as there are many invariant
+			subspaces in $E[d']$, the algorithm need to make guesses. it begins to compute all the candidates
+			for $\ker\varphi_1$ and then do a check.
+			%todo vraiment vérifier chaque courbe E si correct ou non 
 			
 			\paragraph{Finding invariant subspaces}
 
-			As in the $\cite{polyCIST}$, the algorithm try to make guess about the values of $\ker\varphi[d']$,
+			As in $\cite{polyCIST}$, the algorithm tries to make guess about the values of $\ker\varphi[d']$,
 			since this isogeny is separable and cyclic,
 			all subgroups $\ker\varphi[l^{e'}]$ are cyclic of order $l^{e'}$ invariant by
 			$\widehat\sigma_0\circ\omega$ where $l^{e'}$ is a prime power dividing $d'$. 
@@ -897,18 +944,29 @@ where we are given the two specific inputs $\sigma_0$ and $\omega$.
 
 			\begin{lemma}
 				When the the matrix of $\varphi$ in the $l^{e'}$-torsion of $E_0$ is diagonalizable, the options for
-				$\ker\varphi E_0[l^{e'}]$ are the two eigenspaces
+				$\ker(\varphi) E_0[l^{e'}]$ are the two eigenspaces.
 			\end{lemma}
 			
 			According to the authors of $\cite{polyCIST}$, this is almost always the case. This in fact linked
 			to the fact that $l$ splits or not in $\mathbb Z[\widehat\sigma_0\circ\omega]$ but its very
 			technical so we will consider that our algorithm will simply fail if the matrix is not
-			diagonalizable.
-
-			So at the end of line %todo
+			diagonalizable. So at the end of line \ref{line:jsp}%todo
 			, the algorithm either fail or got all possibles $\ker\varphi[l^{e'}]$ for all prime powers of
 			$d'$.
 
+			We know that, in the favorable setting where all factors of $d'$ are odd and split in
+			$\mathbb Z[\widehat\sigma_0\circ\omega]$,
+			the complete kernel of  $\varphi_1$ is among the guesses of the algorithm from
+			eigenspaces generator collected in lines \ref{line:L1} and \ref{line:L2} and built in line
+			\ref{line:makeguess}.
+			
+			\paragraph{Guess check of $\varphi_1$}
+
+			If the codomain of $\varphi_1$ and the codomain of $\widehat\varphi_2$ are the same, then we can
+			build an isogeny $\varphi'=\varphi_2\circ\varphi_1$ of degree  $d'\times \frac{d}{d'}$ from curve
+			$E_0$ to curve $E$ which is exactly the required output. The algorithm then computes the scaling
+			matrix that is compatible with the actual values of $\varphi'$ on the $N$-torsion.
+	%		The second check line \ref{line:hardcheck} 
 			
 			%TODO ajouter pairwise dans les hypothèse, les mêmes que celles dans le papier, voir si certaines
 			%peuvent être supprimées
