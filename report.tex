@@ -124,23 +124,23 @@
 
 
 	\subsection{Elliptic curves}
-		Given a prime number $p>3$ and a field $\mathbb F$ with caracteristic that differs from $2,3$,
+		Given a prime number $p>3$ and a field $\mathbb F$ with characteristic that differs from $2,3$,
 		an elliptic curve $E$ is the set \[
 			E = \{(x,y)\in\mathbb F | y^2=x^{3}+ax+b\} \cup \{P_\infty\}
 		\] 
 		with $4a^3+27b^2\neq0$,
 		
 		There is a natural way to define addition between two points of $E$ that gives a group structure
-		with $P_\infty$ as neutral element. The addition of two points can be computed easly from the
-		coordinates of the two points with rationnal fonctions. With this group structure, an elliptic curve
+		with $P_\infty$ as neutral element. The addition of two points can be computed easily from the
+		coordinates of the two points with rational functions. With this group structure, an elliptic curve
 		can be used in various cryptographic problems such as the discrete log problem, but some functions
 		between elliptic curves, isogenies, also give large possibilities.
 
-		A morphism between elliptic curve is a fonction $\alpha$ that maps $P\in E_1$ to
-		$\alpha(P)=(r(P),s(P))$ with  $r,s$ two rationnal fonctions from $E_1$ to $\mathbb F$, its codomain
+		A morphism between elliptic curve is a function $\alpha$ that maps $P\in E_1$ to
+		$\alpha(P)=(r(P),s(P))$ with  $r,s$ two rational functions from $E_1$ to $\mathbb F$, its codomain
 		is in $E_2$ so for every $P\in E_1$, we must have $s(P)^2=r(P)^3+a_2r(P)+b_2$ ($(r,s)$ can be seen as
-		a point of the elliptic curves $y^2=x^3+a_2x+b_2$ in the field  $\mathbb F(E_1)$ of the rationnal
-		functions of $E_1$). We avoided here technicalities about the infinity point but its image under
+		a point of the elliptic curves $y^2=x^3+a_2x+b_2$ in the field  $\mathbb F(E_1)$ of the rational
+		functions of $E_1$). We avoided here technicalities about the infinity point, but its image under
 		morphism is also well-defined.
 		
 		\begin{definition}
@@ -148,11 +148,11 @@
 			infinity point of $E_1$ to the one of $E_2$.
 		\end{definition}
 		Isogenies are also group morphism from $(E_1,+,P_{1,\infty})$ to $(E_2,+,P_{2,\infty})$, this is not
-		obvious because algebraic morphism are not necessarly morphism for groups.
+		obvious because algebraic morphism are not necessarily morphism for groups.
 
 		\subsection{Cryptographic use}
 
-		If $\mathbb F$ is a field of caracteristic $p$, $n\geq 1$, and a curve $E$ defined on
+		If $\mathbb F$ is a field of characteristic $p$, $n\geq 1$, and a curve $E$ defined on
 		this field, the function $\pi_{p^n}$ 
 		who maps $(x,y)$ to $(x^{p^n},y^{p^n})$ is an isogeny from $E$ to $E$ and is called the Frobenius
 		isogeny.
@@ -161,11 +161,11 @@
 		$\psi$ such that we can write \[
 			\varphi = \psi\circ\pi_{p^n}
 		\] 
-		It is separable otherwise. This lead to a fondamental aspect of cryptographic use of isogenies which
+		It is separable otherwise. This lead to a fundamental aspect of cryptographic use of isogenies which
 		is the degree. If $\varphi$ is separable, its degree is the order of its kernel (which is always
-		finite). The degree of the frobenius isogeny $\pi_{p^n}$ is $p^n$ and the degree is multiplicative so
+		finite). The degree of the Frobenius isogeny $\pi_{p^n}$ is $p^n$ and the degree is multiplicative so
 		the degree of any inseparable isogeny is well-defined. In cryptography, secret isogenies are often
-		taken with degree coprime with the caracteristic $p$ so they must be separable.
+		taken with degree coprime with the characteristic $p$ so they must be separable.
 		We also have $\deg\widehat\varphi=\deg\varphi$ where $\widehat\varphi$ is the dual of $\varphi$
 		defined here.
 
@@ -175,8 +175,8 @@
 			$[d]_E$ is the isogeny that maps $P\in E$ to $P+\dots+P=[d]P\in E$ 
 		\end{definition}
 
-		To complete this short introduciton to elliptic curves, we mention here specifics subgroup of $E$
-		that are the $N$-torsion, denoted $E[N]$. Given a positive ineger $N$, the $N$-torsion is the kernel
+		To complete this short introduction to elliptic curves, we mention here specifics subgroup of $E$
+		that are the $N$-torsion, denoted $E[N]$. Given a positive integer $N$, the $N$-torsion is the kernel
 		of $[N]$, it corresponds to all the points that have their order dividing $N$. When $N$ is coprime
 		with $p$, we have \[
 			E[N]\cong \mathbb Z_N \times \mathbb Z_N
@@ -187,11 +187,11 @@
 		\section{SIDH}
 
 
-		I introduce here the protocol SIDH and the attack, even if this protocol was proven completly non
-		secure, the scheme of the attack is particularlyrelevant in the research of attack against more
-		recent protocols : it makes use of some mathematical evolved tools such are highier-dimensionnal
+		I introduce here the protocol SIDH and the attack, even if this protocol was proven completely non
+		secure, the scheme of the attack is particularly relevant in the research of attack against more
+		recent protocols : it makes use of some mathematical evolved tools such are higher-dimensionnal
 		isogenies and attacks against other protocol try to reduce them to an SIDH instance, that is to say 
-		an isntance of the Problem \ref{pb:sidh} mentionned in the introduction.
+		an instance of the Problem \ref{pb:sidh} mentioned in the introduction.
 		Moreover, the protocol we want to attack, FESTA, use an implementation of the attack in its
 		decryption algorithm.  
 
@@ -203,7 +203,7 @@
 	There is a starting curve $E_0$, Alice chooses an isogeny $\varphi_A:E_0\to E_A$
 	and send $E_A$ to Bob who sent in the same time the curve $E_B$ he obtained
 	from the isogeny $\varphi_B:E_0\to E_B$ he had chosen before.
-	This protocol requires additionnal information because it's not as simple as in the
+	This protocol requires additional information because it's not as simple as in the
 	case in group where the knowledge of $g^b$ and $a$ make Alice able to construct
 	$g^{ab}=(g^b)^a$.
 	Alice knows $\varphi_A$ and  $E_B$ and would want to create something like
@@ -225,9 +225,9 @@
 	These two curves $E_{AB}$ and $E_{BA}$ are in fact always isomorphic so they both agreed on an
 	isomorphic class of curve at the end of the protocol.
 
-	The security of the protocol relies entierly on the assumption that Problem \ref{pb:sidh} is hard
+	The security of the protocol relies entirely on the assumption that Problem \ref{pb:sidh} is hard
 	because if not then an adversary,
-	with the knwoledge of $\varphi_A(P_B),\varphi_A(Q_B)$ has sufficient information to recover entierly
+	with the knowledge of $\varphi_A(P_B),\varphi_A(Q_B)$ has sufficient information to recover entirely
 	the secret isogeny $\varphi_A$ of Alice and then build the curve $E_{BA}$.
 	\subsection{High-level view of the attack}
 	Before going into more details about the mathematical tools (2-dimension isogenies)
@@ -235,8 +235,7 @@
 	on the degree of the secret isogeny and the torsion of $E_0$ that is sufficient
 	to find $\varphi$ according to an generic attack proposed in {\cite{sidhpolyattack}}. 
 	\begin{theorem}\label{thm:sidh}
-		Let $\varphi:E_0 \to E$ be a secret degree disogeny (where $d$
-		is known) and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
+		Let $\varphi:E_0 \to E$ be a secret degree isogeny of known degree $d$ and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
 		where $N$ and $d$ are assumed smooth and coprime, and $N^2 > 4d$. Let $\mathbb{F}_q$ be the
 		smallest field over which $E_0[N],E_0[d]$ and $\varphi$ are defined, then the kernel of
 		$\varphi$ can be computed in a polynomial number of operations in $\mathbb{F}_q$.
@@ -244,23 +243,23 @@
 	%TODO verify (see paper)
 	In fact this attack require only $N^2>d$ to run but may return an ambiguous result
 	in this case. Intuitively, the larger $N$ the more information is given about
-	the behaviour of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
+	the behavior of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
 	so is difficult to recover from torsion points.
 
 	\subsection{Mathematical tools}
 	Giving the images of torsion points was considered safe until a mathematical result based
-	on elliptic curve product and higher-dimensionnal isogenies gave ways to recover
+	on elliptic curve product and higher-dimensional isogenies gave ways to recover
 	the secret isogeny in classical polynomial-time.
 	We recall here a lemma proved by Kani in \cite{kani} that make torsion-point attacks possibles.
 	%TODO trouver formulation du thm
 	\begin{theorem}
 		\label{thm:twoiso}
-		Let $E_0$, $E_1$ and $2$ be three elliptic curves definied over
+		Let $E_0$, $E_1$ and $2$ be three elliptic curves defined over
 		$\overline{\mathbb{F}}_p$ such that there exist two isogenies
 		$\varphi_{N_1}:E_0\to E_1$ and $\varphi_{N_2}:E_0\to E_2$ of coprime degrees
 		$\deg(\varphi_{N_1})=N_1$ and $\deg(\varphi_{N_2})=N_2$. Then, the subgroup
 		$$\{([N_2]\varphi_{N_1}\times[N_1]\varphi_{N_2})\circ(P,P)~|~ P\in E_0[N_1+N_2]\}$$
-		is the kernel of a $(N_1+N_2,N_1+N_2)$-polarised isogeny $\Phi$
+		is the kernel of a $(N_1+N_2,N_1+N_2)$-polarized isogeny $\Phi$
 		having product codomain $E_0\times F$ and matrix form
 		$$
 		\begin{pmatrix}\widehat\varphi_{N_1} & -\widehat\varphi_{N_2}
@@ -280,31 +279,31 @@
 			\circ (P,P)|P\in E_1[N_1+N_2]\}$. If we 
 		say that $\varphi_{N_2}$ is the secret isogeny and that the image of the $N$-torsion under
 		$\varphi_{N_1}$ is given with $N>N_2$. Then if we find an isogeny $\varphi_{N_2}$ of degree 
-		$N_1 := N - N_2$ fro  $E_0$ to any curve $E_1$, then we know the kernel of the two-dimension
+		$N_1 := N - N_2$ from  $E_0$ to any curve $E_1$, then we know the kernel of the two-dimension
 		isogeny $\Phi$ and we are able to recover $\widehat\varphi_{N_2}$. The condition $N>N_2$ seems to
 		be restrictive because it makes the degree of the secret isogeny smaller than the torsion-point
 		information we give, but decomposing the secret isogeny into smaller one and using this technique to
-		recover them one by one is efficent. The trickiest part of SIDH attack is to find an isogeny with the
-		wanted degree $N - N_2$ is detailed in the papers we mentionned about SIDH.
+		recover them one by one is efficient. The trickiest part of SIDH attack is to find an isogeny with the
+		wanted degree $N - N_2$ is detailed in the papers we mentioned about SIDH.
 
 
 		\section{FESTA}
 		In 2023, a public key encryption scheme based on the SIDH attack was introduced
 		in \cite{FESTA}, it and relies on a trapdoor function, that is a function which is
-		difficult to inverse except whith the knowledge of an additionnal information. This kind
+		difficult to inverse except with the knowledge of an additional information. This kind
 		of function is a primitive that can be used to build public-key encryption scheme
 		and the one-wayness of the function is equivalent to the security of the scheme.
 
 		\subsection{Security assumptions}
 			As said before, SIDH has been broken so cryptographers have explored the option to scale
-			the additonnal information they provide, we usually use matrix notation for scaling
+			the additional information they provide, we usually use matrix notation for scaling
 			\[
 				\begin{pmatrix} S \\ T \end{pmatrix} = \begin{pmatrix} \lambda_1 & 0\\ 0 & \lambda_2 \end{pmatrix} 	
 				\varphi \begin{pmatrix} P \\ Q \end{pmatrix} 
 			\] 
 			which means $S=\lambda_1\varphi(P)$ and $T=\lambda_2\varphi(Q)$. The derived problem is described
 			here, with $\mathcal M_n$ the set of diagonal matrices. An important fact is that the product
-			$\lambda_1\lambda_2$ can be easly computed through Weil pairing, we have
+			$\lambda_1\lambda_2$ can be easily computed through Weil pairing, we have
 			$$e_n(S,T)=e_n([\lambda_1]\varphi(P),[\lambda_2]\varphi(Q))=
 			e_n(\varphi(P),\varphi(Q))^{\lambda_1\lambda_2}=e_n(P,Q)^{\lambda_1\lambda_2\deg\varphi}$$
 			which is a discrete log in a smooth order group and gives this way access to the product.
@@ -319,13 +318,13 @@
 				isogeny  $\varphi$
 			\end{problem}
 	
-			This problem is considered safe for the moment, and a lot of protocols relie on its hardness. But
+			This problem is considered safe for the moment, and a lot of protocols rely on its hardness. But
 			there exist advanced attack that work in specific setting, generalization of such attack could lead
 			to break this generation of protocol. 
 
 
 			However, FESTA is based on an easier version of the problem
-			where there are two secret isogenies to find with two differents startings curves and given
+			where there are two secret isogenies to find with two different startings curves and given
 			for each scaled information on the torsion points, but with the same scaling matrix applied to the
 			two pair of points.
 
@@ -333,7 +332,7 @@
 			Let $E_0$ be a supersingular elliptic curve defined over $\mathbb{F}_{p^2}$ and
 			let  $E_0'$ be a random supersingular elliptic curve defined over the same field.
 			Consider two isogenies $\varphi:E_0\to E_1$ and $\varphi':E'_0\to E'_1$ of smooth
-			degrees $d$ and $d'$ , respectively. Let $n$ be a smooth integer coprmier with $d$ and 
+			degrees $d$ and $d'$ , respectively. Let $n$ be a smooth integer coprime with $d$ and 
 			$d'$, and let $\mathbf A $ be a matrix sampled as $\mathbf A\gets^{\$}\mathcal M_n$.
 
 			Given the curves  $E_0,E_1,E'_0,E'_1$, two bases $P,Q$ of $E_0[n]$ and $P',Q'$ of
@@ -341,22 +340,22 @@
 			(\varphi'(P')\varphi'(Q'))^T$, computes the isogenies $\varphi$ and $\varphi'$.
 		\end{problem}
 
-		This is a problem designed specifically for FESTA so there is no complex proof of security for
-		FESTA if CIST2 hardness is assumed so the ultimate goal of the intership would be to find an attack
+		This is a problem designed specifically for FESTA, so there is no complex proof of security for
+		FESTA if CIST2 hardness is assumed, so the ultimate goal of the internship would be to find an attack
 		against this specific problem, that is an attack that would exploit the fact that the two scaling
 		matrices are the same.
 
 		\subsection{High-level description}
-		The public parameters are a supersingular elliptic curve $E_0$ definied over
+		The public parameters are a supersingular elliptic curve $E_0$ defined over
 		$\mathbb{F}_{p^2}$ and a basis $\mathcal B_{E_0[2^b]}=(P_b,Q_b)$ of the $2^b$-torsion
 		of $E_0$.
 
 		The key generation consists in the choice of a secret isogeny $\varphi_A$ from 
-		$E_0$ to a curve $E_A$, as in SIDH some additionnal information is given about
+		$E_0$ to a curve $E_A$, as in SIDH some additional information is given about
 		$\varphi_A$. Since the knowledge of $\varphi_A|_{E[2^b]}$ (ie
 		$(\varphi_A(P_b),\varphi_A(Q_b))$ lets an attacker able to recover $\varphi_A$,
-		the information about behaviour of  $\varphi_A$ on the  $2^b$-torsion is scaled
-		with a matrix $\mathbf A$ which belon to the trapdoor with $\varphi_A$.
+		the information about behavior of  $\varphi_A$ on the  $2^b$-torsion is scaled
+		with a matrix $\mathbf A$ which belongs to the trapdoor with $\varphi_A$.
 		Thus, the trapdoor is $(\varphi_A,\mathbf A)$ and the public key is 
 		$\mathtt{pk}=(E_A,R_A,S_A)$ where
 		\[
@@ -372,13 +371,13 @@
 			\end{tikzcd}
 		\end{center}
 
-		\paragraph{Evaluation} The inputs of the evaluation function are two isogeny
+		\paragraph{Evaluation} The inputs of the evaluation function are two isogenies
 		$\varphi_1:E_0\to E_1$ and $\varphi_2:E_A\to E_2$ plus a scaling matrix $\mathbf B$.
 		Using a representation of the isogenies using a generator of their kernel described
-		in a deterministicaly generated basis, the domain of $f_\mathtt{pk}$ is
+		in a deterministically generated basis, the domain of $f_\mathtt{pk}$ is
 		$$\mathbb{Z}/d_1\mathbb{Z}\times\mathbb{Z}/d_2\mathbb{Z}\times\mathcal M_n$$
 		where $\mathcal M_b$ is the set of scaling matrices.
-		The output of the function are curves $E_1$ and $E_2$ plus additionnal information
+		The output of the function are curves $E_1$ and $E_2$ plus additional information
 		about $\varphi_1$ and $\varphi_2$, that is some torsion points scaled with $\mathbf B$.
 		The output is $(E_1,R_1,S_1,E_2,R_2,S_2)$ where
 		\[
@@ -510,11 +509,11 @@
 		This equality implies that it is possible to get the images of $\varphi\circ\omega
 		\circ\widehat\varphi$ on the basis $(P,Q)$ of the $N$-torsion from the only knowledge
 		of the matrix $\mathbf M$ and the points $(S,T)$. Then, if the degree of this isogeny
-		is small enough (in fact $N^2>wd^2$), it is possible to recover it completly using SIDH attack. 
+		is small enough (in fact $N^2>wd^2$), it is possible to recover it completely using SIDH attack. 
 		However, recovering this isogeny
-		does not always give meaningfull information about $\varphi$. Let's take the trivial
+		does not always give meaningful information about $\varphi$. Let's take the trivial
 		example of $\omega=\mathrm{Id}_{E_0}$, the isogeny $\varphi\circ\omega\circ\widehat\varphi$
-		is in this case $[d]$ which doesn't contain any additionnal information on $\varphi$.
+		is in this case $[d]$ which doesn't contain any additional information on $\varphi$.
 
 		\begin{center}
 			% https://tikzcd.yichuanshen.de/#N4Igdg9gJgpgziAXAbVABwnAlgFyxMJZABgBpiBdUkANwEMAbAVxiRAFEB9YkAX1PSZc+QijIBGKrUYs27AOTc+UmFADm8IqABmAJwgBbJGRA4IScdXrNWiEAB179XWgAWWENTjvtOC9QY6ACMYBgAFITwCNl0sNVc-fh19I0QTM2MAiAg0InEADjJtRjgYKUCQ8MiRGLiEz2kbNkdDGDU6PgEQPUN-U3M0rx8-REtG2TtHAHcsWFc6HEdnNw8A4NCI7CjREFj4xIpeIA
@@ -524,10 +523,10 @@
 			\end{tikzcd}
 		\end{center}
 
-		\subsection{Ugraded lollipop}
-		The main bottleneck of the previous approach is the condtion on the degree of 
-		$\varphi\circ\omega\circ\widehat\varphi$ which should not be to large to apply SIDH attack so
-		we need in fact to controll the degree of $\omega$, the one we can controll the other beeing $d$
+		\subsection{Upgraded lollipop}
+		The main bottleneck of the previous approach is the condition on the degree of 
+		$\varphi\circ\omega\circ\widehat\varphi$ which should not be too large to apply SIDH attack so
+		we need in fact to control the degree of $\omega$, the one we can control the other being $d$
 		which is
 		given as input, in order to apply the SIDH attack. There is an
 		improvement of this technique that reduces the degree in some cases. We now set $\omega$ to
@@ -547,13 +546,13 @@
 
 		The required inequality for using SIDH attack on $\psi$ is $N^2>swd^2$ where $s$ is the degree
 		of $\sigma_0$. For the moment it corresponds to the previous one since  $w'=ws$, but the point
-		is that the knowledge of the pushforward of $\sigma_0$ through $\varphi$ eliminates $s$.
-		Let assume we know $\sigma$ the pushforward of $\sigma_0$ through $\varphi$, that is the isogeny
+		is that the knowledge of the push-forward of $\sigma_0$ through $\varphi$ eliminates $s$.
+		Let assume we know $\sigma$ the push-forward of $\sigma_0$ through $\varphi$, that is the isogeny
 		that has kernel $\varphi(\mathrm{Ker}\sigma_0)$ going from $E'_0$ to another curve $E'$
 		and that effectively computable in some situation.
-		To delete the $s$ of the conditon we need to eliminate $\sigma_0$ in $\psi = \varphi\circ\widehat
+		To delete the $s$ of the condition we need to eliminate $\sigma_0$ in $\psi = \varphi\circ\widehat
 		\sigma_0\circ\omega\circ\widehat\varphi$ so we let $\psi=\varphi'\circ\omega\circ\widehat\varphi$
-		with $\varphi'$ the pushforward of $\varphi$ through $\sigma$ (we don't need to actually compute
+		with $\varphi'$ the push-forward of $\varphi$ through $\sigma$ (we don't need to actually compute
 		it, as $\varphi$ we have knowledge on it up to the scaling matrix $\mathbf A$).
 		We have the following diagram :
 		\begin{center}
@@ -594,14 +593,14 @@
 
 
 		It was also difficult to figure out what an actual algorithm that implement the attack could look
-		like so I focused on this aspect even if it is clear that the restrictive setting I've chosen does
+		like, so I focused on this aspect even if it is clear that the restrictive setting I've chosen does
 		not provide an attack for general setting of FESTA, it would be important in the research for more
-		general attack to know what we can get out of these particular situation.
+		general attack to know what we can get out of these particular situations.
 
-		In this section I givee a description of an algorithm that achieve an attack against FESTA in the
+		In this section, I give a description of an algorithm that achieve an attack against FESTA in the
 		case where we are given the two specific inputs $\sigma_0$ and $\omega$, there are specific
 		requirements specified in the inputs section. We consider here that the secret scaling matrix of the
-		CIST instance given as input is diagonnal.
+		CIST instance given as input is diagonal.
 
 		We also give detailed proofs of correctness of this algorithm to show that it performs the attack
 		described in \cite{polyCIST} correctly, in particular the trickiest part which is the extraction
@@ -617,7 +616,7 @@
 			\item Recover $\varphi$ from $\psi$
 		\end{itemize}
 		We are interested here in the case where "good" $\omega$ and $\sigma_0$ have already been found
-		so they are been considerd as auxiliary inputs for the algorithm we describe here. Once these
+		so they are been considered as auxiliary inputs for the algorithm we describe here. Once these
 		$\sigma_0$ and $\omega$ as been found, computing the isogeny $\psi$ depends on an attack against
 		SIDH while the third step which is recovering $\varphi$ from $\psi$ is more technical and this
 		is the one we give detail about.
@@ -627,16 +626,16 @@
 		We are given curves $E_0,E$, two positive integers $d$ and $N$, a basis $P,Q$ of $E_0[N]$ and
 		two points  $S,T\in E$
 
-		\paragraph{Additionnal inputs}
+		\paragraph{Additional inputs}
 		The attack also require to find good $\sigma_0:E_0\to E'_0$ and good $\omega:E_0\to E'_0$ satisfying:
 		\begin{itemize}
 			\item The endomorphism $\widehat\sigma_0\circ\omega\in\mathrm{End}(E_0)$
 				should admit $P,Q$ as eigenvectors
 			\item The degree $w$ of $\omega$ should be small
-			\item The pushforward of $\sigma_0$ through $\varphi$ should be efficient to compute
+			\item The push-forward of $\sigma_0$ through $\varphi$ should be efficient to compute
 			\item The degree $s$ of $\sigma_0$ should be coprime with $N$
 		\end{itemize}
-		Theses additionnal inputs are $\sigma_0,s,\omega,w$.
+		Theses additional inputs are $\sigma_0,s,\omega,w$.
 
 		\subsubsection{Output}
 		An cyclic isogeny $\varphi:E_0\to E$ of degree $d$ and a scaling matrix $\mathbf A$ such that
@@ -662,7 +661,7 @@
 				%	(\widehat\sigma_0\circ\omega)\begin{pmatrix} P \\ Q \end{pmatrix} = \mathbf M\begin{pmatrix} P \\ Q \end{pmatrix} 
 				%\] 
 
-				The next step is to compute $\sigma$ the pushforward of $\sigma_0$ under $\varphi$ which
+				The next step is to compute $\sigma$ the push-forward of $\sigma_0$ under $\varphi$ which
 				is supposed to be easy to achieve.
 				%Recall that	$\sigma_0$ is either the identity or the Frobenius so we know $\sigma$.
 
@@ -679,7 +678,7 @@
 				%(Add conditions of success with N,d…)%TODO
 
 				\paragraph{Getting $\varphi$ out of $\psi$}
-				Since this operation is much more technical that the previous one, I've written the algorithm
+				Since this operation is much more technical than the previous one, I've written the algorithm
 			\ref{algo:extraction} which gives $\varphi$. It uses the algorithm \ref{algo:ddlog} to compute
 			the double discrete log, that is the integers $m,n$ where given points $P,Q,R$ are such that
 			$R=mP+nQ$, this problem in a group of smooth order is really efficient as usual discrete log.
@@ -826,23 +825,23 @@
 
 				\subsection{Correctness}
 %TODO change "small" in the inputs to the precise degree we need
-				We give here a proof that the algorithm always give the correst isogeny or $\bot$ when the
-				given CIST instance is correct and additionnal input satisifies the required conditions
-				mentionned before.
+				We give here a proof that the algorithm always give the correct isogeny or $\bot$ when the
+				given CIST instance is correct and additional input satisfies the required conditions
+				mentioned before.
 
 				\subsubsection{Computing $\psi$}
 				We assume we are given a valid CIST instance, the set $X$ of possible scaling matrices is the
 				set of diagonal matrices. Then, the fact that $P,Q$ are eigenvectors of the
 				endomorphism $\widehat\sigma_0\circ\omega$ ensure that its matrix  $\mathbf M$ in the basis $(P,Q)$
-			is also diagonnal so it belongs to the centralizer of $X$. Then the Lemma 3 of \cite{polyCIST} gives
+			is also diagonal so it belongs to the centralizer of $X$. Then the Lemma 3 of \cite{polyCIST} gives
 			the equality  \[
 			s\cdot\psi\begin{pmatrix} S \\ T \end{pmatrix} = d\cdot\mathbf M\cdot\sigma\begin{pmatrix}
 		S \\ T \end{pmatrix} 
 			\] 
 			with $\psi$ defined as $\varphi'\circ\omega\circ\widehat\varphi$ where $\varphi'$ is the
 			push-forward $\varphi$ through $\sigma_0$. 
-			Since $N$ and $s$ are coprime, the number $s^{-1}$ is well-definied and it is possible to multiply
-			this equality with this value to get a propper SIDH instance.
+			Since $N$ and $s$ are coprime, the number $s^{-1}$ is well-defined and it is possible to multiply
+			this equality with this value to get a proper SIDH instance.
 
 			We have $$\deg\psi=\deg\varphi'\deg\omega\deg\widehat\varphi=\deg\varphi\deg\omega\deg\varphi=wd^{2}$$
 			so considering $N^2\geq wd^2$ we have a valid polynomial attack that gives us access to $\psi$,
@@ -870,8 +869,8 @@
 			H$.
 			
 			Let $l$ be such an integer such that $E[l]\in\ker\psi$, $E[l]$ contains all points of the curve
-			that have their oreder dividing $l$ so the point $I'=\frac{d}{l}I$ and $J'=\frac{d}{l}J$
-			are both of order $d$ and independants so they are generators of $E[l]$.
+			that have their order dividing $l$ so the point $I'=\frac{d}{l}I$ and $J'=\frac{d}{l}J$
+			are both of order $d$ and independents so they are generators of $E[l]$.
 			Let $L=uI'+vJ'$ be a point of the $l-$torsion, we have \[
 				\mathbf H\cdot L=\begin{pmatrix} a & b \\ c & d \end{pmatrix}\begin{pmatrix} u\frac{d}{l} \\ 
 			v\frac{d}{l}\end{pmatrix} = \frac{d}{l} \begin{pmatrix} au+bv \\ cu+dv \end{pmatrix} 
@@ -892,14 +891,14 @@
 			
 			The rest of the algorithm is divided in two parts : computation of 
 			$\ker\widehat\varphi[\frac{d}{d'}]$ and the computation of $\ker\varphi[d']$. Here is the proof
-			that computing these two sets gives at the end the full knwoledge of $\ker\varphi$.
+			that computing these two sets gives at the end the full knowledge of $\ker\varphi$.
 			The isogeny $\varphi$ is cyclic of degree $d$, so it can be factorized into 
 
 			$$\varphi=\varphi_2\circ\varphi_1$$ with  $\deg\varphi_1 = d'$ and  $\deg\varphi_2 = \frac{d}{d'}$.
 			Then we have $\ker\varphi_1\subseteq\ker\varphi$ and also $\ker\varphi_1\subseteq E[d']$ 
 			so we have  $\ker\varphi_1 =\ker\varphi[d']$ when taking its degree into account.
 			The dualization $\widehat\varphi = \widehat\varphi_1\circ\widehat\varphi_2$ gives on the other
-			hand $\ker\widehat\varphi_2=\ker\varphi[\frac{d}{d'}]$. Knowign the kernel of $\widehat\varphi_2$
+			hand $\ker\widehat\varphi_2=\ker\varphi[\frac{d}{d'}]$. Knowing the kernel of $\widehat\varphi_2$
 			we can compute the kernel of $\varphi_2$ so having these two components give exactly the isogeny
 			$\varphi$.
 
@@ -924,18 +923,18 @@
 			%\subsubsection{Computing $\ker\varphi[d']$}
 			\subsubsection{Computing $\varphi_1$}
 
-			\paragraph{Caracterization of $\ker\varphi_1$}
+			\paragraph{Characterization of $\ker\varphi_1$}
 			First, we give here a complete proof of the fact that \[
 				(\widehat\sigma_0\circ\omega)(\ker\varphi)[d']=\ker\varphi[d']
 			\] 
 
 			Since $\ker\varphi'$ is defined as $\sigma_0(\ker\varphi)$ this equality holds when considering only
-			the $d'-$torsion so we have $\ker\varphi[d']=\sigma_0(\ker\varphi)[d']$. 
+			the $d'$-torsion so we have $\ker\varphi[d']=\sigma_0(\ker\varphi)[d']$. 
 
 			Let us prove that $\omega(\ker\varphi)[d']=\ker\varphi'[d']$
 			We take a generator $P$ of $\ker\widehat\varphi$, since $\ker\widehat\varphi\subseteq E[d]$
 			we can take
-			an order $d$ point $Q\in E[d]$ that is independant with $P$, since $\langle P\rangle$ and  $\langle
+			an order $d$ point $Q\in E[d]$ that is independent with $P$, since $\langle P\rangle$ and  $\langle
 			Q \rangle$ intersect trivially, the point  $R=\widehat\varphi(Q)$ is of order $d$, it also clear that
 			it belongs to the kernel of  $\varphi$ since $\varphi(R)=\varphi\circ\widehat\varphi(Q)=[d]Q=0$.
 			So $R$ is a generator of $\ker\varphi$, we can write $\langle R\rangle = \ker\varphi$ and
@@ -946,11 +945,11 @@
 				0=\psi\left(\left[\frac{d}{d'}\right] Q\right) =
 				(\varphi'\circ\omega\circ \widehat\varphi)\left(\left[\frac{d}{d'}\right]Q\right)
 				= \varphi'\circ\omega\left(\left[\frac{d}{d'}\right]R\right)
-			\] so $\omega(\frac{d}{d'}R)\in\ker\varphi'$ and more generarly $\omega(\langle
+			\] so $\omega(\frac{d}{d'}R)\in\ker\varphi'$ and more generally $\omega(\langle
 			\frac{d}{d'}R\rangle)\subseteq\ker\varphi'[d']$.
 			Let $R'=[\frac{d}{d'}]R$, it is an order $d'$ point that generates $\ker\varphi[d']$, since $d$ and
-			$w$ are coprime the compositon by $\omega$ cannot affect the order of the point : let $o$ be the
-			order of $\omega(R')$, we have  $[o]\omega(R')=0$ so $[o]R'\in\ker\omega$, rembering $[o]R'$ is an
+			$w$ are coprime the composition by $\omega$ cannot affect the order of the point : let $o$ be the
+			order of $\omega(R')$, we have  $[o]\omega(R')=0$ so $[o]R'\in\ker\omega$, remembering $[o]R'$ is an
 			order $\frac{d'}{o}$ point, we need to have $o=d'$ to avoid having factor of $d'$ (that are also
 			factor of $d$) dividing $w$ the degree of $\omega$. So $\omega(\langle R'\rangle)$ is an order $d'$ 
 			subgroup of $\ker\varphi[d']$ which also of order  $d'$ so we have the equality \[
@@ -1029,24 +1028,24 @@
 				$\sigma_0$. As they are all given as input we can consider that this is the same situation as if
 				the attack would have access to an oracle. Once the SIDH instance has been computed, the attack
 				against this attack to recover the isogeny $\psi$ has an high cost and this is why 
-				there is a conditon on the degree of $\omega$ to ensure that $\deg\psi \leq N^2$ so the attack
+				there is a condition on the degree of $\omega$ to ensure that $\deg\psi \leq N^2$ so the attack
 				against SIDH runs polynomially in this setting according to Theorem \ref{thm:sidh}.
 				
 			\paragraph{About $d'$}
-				The core attack is based on the fact that the more $\psi$ is cyclic the more is computed during
+				The core attack is based on the fact that the more $\psi$ is cyclic, the more is computed during
 				the computation of $\varphi_2$ because the more information $\psi$ reveals about $\varphi$.
 				When $\psi$ does not reveal a lot of thing about $\varphi$, it is linked to a particular way the
-				endomorphism $\widehat\sigma_0\circ\omega$ interract with $\varphi$ and its kernel and we can
+				endomorphism $\widehat\sigma_0\circ\omega$ interact with $\varphi$ and its kernel, and we can
 				recover partial information that is used to make guesses to compute $\varphi_1$. 
 
 				The time to perform the first step is negligible compared to the running time of the step with
 				the guess and we need $d'$ to be as small as possible. An estimation of $r'$ the number of prime
-				factor in $d'$ is given in \cite{polyCIST} and leads to $O(\log d)$ which is sufficent to affirm
+				factor in $d'$ is given in \cite{polyCIST} and leads to $O(\log d)$ which is sufficient to affirm
 				that the whole step is polynomial in most cases but its largely heuristic.
 				However, this probability estimation is made 
 				with fixed $\varphi$ and varying $\widehat\sigma_0\circ\omega$ so it doesn't prevent the
 				algorithm presented here to have a non-polynomial time and its raise the issue to have a complete
-				attack that would produce the additionnal isogenies given as input here.
+				attack that would produce the additional isogenies given as input here.
 				
 				\paragraph{External functions} We used an algorithm $\mathbf{TorGen}$ that is polynomial and
 				deterministic and used in \cite{FESTA}. The two other algorithms \ref{algo:eigenvals} and
@@ -1061,15 +1060,15 @@
 
 				This internship has been the occasion for me to get a deep understanding of the protocol FESTA
 				and the 
-				sophistaced attacks against this and against SIDH. Having a written algorithm makes the role of
-				every additionnal inputs clear and helps the research of "good" aditional inputs.
+				sophisticated attacks against this and against SIDH. Having a written algorithm makes the role of
+				every additional inputs clear and helps the research of "good" additional inputs.
 				The encouraging thing is that the algorithm is really efficient in several specific situations
 				that don't depend on $\varphi$ which is encouraging.
 				
 				The situation looks like SIDH attack where we need to find a "good" isogeny (with the desired
 				degree) to use Kani's Lemma and recover the secret isogeny, there are a lot of details to take
 				into account when considering the search endomorphism, even with a fixed curve $E_0$.
-				The direct application to FESTA and it's CIST2 problem is also really intresting, a small
+				The direct application to FESTA and it's CIST2 problem is also really interesting, a small
 				modification of this algorithm could lead to leak partial information about the first isogeny
 				$\varphi_1$ that may be combined with some of $\varphi_2$ in order to finally get at the end
 				the scaling matrix $\mathbf B$.
