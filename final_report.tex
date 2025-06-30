@@ -99,12 +99,12 @@
 	The Supersingular Isogeny Diffie-Hellmann is a scheme derived from the usual
 	Diffie-Hellmann exchange where we have a group $G= \langle g\rangle$ and Alice choose a
 	secret integer $a$ and send $g^a$, Bob choose a secret $b$ and send $g^b$ to Alice,
-	at the end they are both able to compute $g^{ab}$ which is their shared secret.
+	at the end, they are both able to compute $g^{ab}$ which is their shared secret.
 	There is a starting curve $E_0$, Alice chooses an isogeny $\varphi_A:E_0\to E_A$
 	and send $E_A$ to Bob who sent in the same time the curve $E_B$ he obtained
 	from the isogeny $\varphi_B:E_0\to E_B$ he had chosen before.
-	This protocol requires additionnal information because it's not as simple as the
-	case in group where the knowledge of $g^b$ and $a$ make Alice able to construct
+	This protocol requires additional information because it's not as simple as the
+	case in group where the knowledge of $g^b$ and $a$ makes Alice able to construct
 	$g^{ab}=(g^b)^a$.
 	Alice knows $\varphi_A$ and  $E_B$ and would want to create something like
 	$\varphi_A':E_B\to E_{AB}$
@@ -116,32 +116,32 @@
 	on the degree of the secret isogeny and the torsion of $E_0$ that is sufficient
 	to find $\varphi$.
 	\begin{theorem}{\cite{sidhpolyattack}}
-		Let $\varphi:E_0 \to E$ be a secret degree disogeny (where $d$
-		is known) and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
+		Let $\varphi:E_0 \to E$ be a secret degree isogeny of known degree $d$
+		and assume we are given the images of $\varphi$ on a basis $\{P,Q\}$ of $E_0[N]$,
 		where $N$ and $d$ are assumed smooth and coprime, and $N^2 > 4d$. Let $\mathbb{F}_q$ be the
 		smallest field over which $E_0[N],E_0[d]$ and $\varphi$ are defined, then the kernel of
 		$\varphi$ can be computed in a polynomial number of operations in $\mathbb{F}_q$.
 	\end{theorem}
 	%TODO verify (see paper)
-	In fact this attack require only $N^2>d$ to run but may return an ambiguous result
+	In fact, this attack requires only $N^2>d$ to run but may return an ambiguous result
 	in this case. Intuitively, the larger $N$ the more information is given about
-	the behaviour of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
+	the behavior of $\varphi$ and the larger $d$ is the more complex $\varphi$ is and
 	so is difficult to recover from torsion points.
 	$\varphi$.
 	\subsection{Mathematical tools}
 	Giving the images of torsion points was considered safe until a mathematical result based
-	on elliptic curve product and higher-dimensionnal isogenies gave ways to recover
+	on elliptic curve product and higher-dimensional isogenies gave ways to recover
 	the secret isogeny in classical polynomial-time.
 	We recall here a result that make torsion-point attacks possibles.
 	%TODO trouver formulation du thm
 	\begin{theorem}
 		\label{thm:twoiso}
-		Let $E_0$, $E_1$ and $2$ be three elliptic curves definied over
+		Let $E_0$, $E_1$ and $2$ be three elliptic curves defined over
 		$\overline{\mathbb{F}}_p$ such that there exist two isogenies
 		$\varphi_{N_1}:E_0\to E_1$ and $\varphi_{N_2}:E_0\to E_2$ of coprime degrees
 		$\deg(\varphi_{N_1})=N_1$ and $\deg(\varphi_{N_2})=N_2$. Then, the subgroup
 		$$\{([N_2]\varphi_{N_1}\times[N_1]\varphi_{N_2})\circ(P,P)~|~ P\in E_0[N_1+N_2]\}$$
-		is the kernel of a $(N_1+N_2,N_1+N_2)$-polarised isogeny $\Phi$
+		is the kernel of a $(N_1+N_2,N_1+N_2)$-polarized isogeny $\Phi$
 		having product codomain $E_0\times F$ and matrix form
 		$$
 		\begin{pmatrix}\widehat\varphi_{N_1} & -\widehat\varphi_{N_2}
@@ -154,6 +154,7 @@
 			E_1 \arrow[ru, "\varphi"] \arrow[r, "g_{N_2}"']            & F \arrow[u, "g_{N_1}"']
 		\end{tikzcd}\end{center}
 		\end{theorem}
+
 
 
 		In \cite{directkeysidh} and in attacks on SIDH, discussion are about finding an

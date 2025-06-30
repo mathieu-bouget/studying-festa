@@ -81,16 +81,16 @@
 
 
 	Over the last decades, isogeny-based cryptography feeds hope to find efficient
-	quantum-resistant primitives because of the reasonable running time and size of keys. One fondamental
-	problem of isogeny is the plain isogeny problem, which is assumed hard even to quantum adversaries. 
+	quantum-resistant primitives because of the reasonable running time and size of keys. One fundamental
+	problem of isogeny is the plain isogeny problem, which is assumed to be hard even to quantum adversaries. 
 
 	\begin{problem}[Computational Supersingular Isogeny]\label{pb:CSSI}
 	Given two curves $E,E'$, find an isogeny $\varphi:E\to E'$ 
 	\end{problem}
 
-	However it is not possible to build protocol out of this problem as we need additionnal information
+	However, it is not possible to build protocol out of this problem as we need additional information
 	about the isogeny. The protocol SIDH proposed in \cite{sidh} in 2011 was one major candidate and
-	relies on the following problem, kwnon as isogeny interpolation.
+	relies on the following problem, known as isogeny interpolation.
 
 	\begin{problem}[SIDH Instance]\label{pb:sidh}
 	Given two curves $E,E'$ and $P,Q$ two independent points of smooth order $N$ and $\varphi(P),\varphi(Q)$
@@ -104,7 +104,7 @@
 	design of the protocols, but the main idea is that giving scaled values $\lambda_1\varphi(P)$ and
 	 $\lambda_2\varphi(Q)$ should be safer, even if it makes protocols more complex.
 
-	Among them, there is a public encryption scheme FESTA proposed in \cite{FESTA} which has the
+	Among them, there is a public encryption scheme FESTA proposed in \cite{FESTA} that has the
 	particularity to use the attack against SIDH in its decryption algorithm.
 	The goal of this internship
 	was to focus on the security aspect of FESTA and its specific problem. To do so, I worked on an attack
@@ -122,7 +122,8 @@
 	We give here some basic knowledge about elliptic curves and their use in cryptography. All the notions
 	are given in dimension 1 which doesn't require knowledge in algebraic geometry.
 
-	\subsection{Elliptic Curves}
+
+	\subsection{Elliptic curves}
 		Given a prime number $p>3$ and a field $\mathbb F$ with caracteristic that differs from $2,3$,
 		an elliptic curve $E$ is the set \[
 			E = \{(x,y)\in\mathbb F | y^2=x^{3}+ax+b\} \cup \{P_\infty\}
@@ -149,7 +150,7 @@
 		Isogenies are also group morphism from $(E_1,+,P_{1,\infty})$ to $(E_2,+,P_{2,\infty})$, this is not
 		obvious because algebraic morphism are not necessarly morphism for groups.
 
-		\subsection{Cryptographic Use}
+		\subsection{Cryptographic use}
 
 		If $\mathbb F$ is a field of caracteristic $p$, $n\geq 1$, and a curve $E$ defined on
 		this field, the function $\pi_{p^n}$ 
@@ -181,6 +182,8 @@
 			E[N]\cong \mathbb Z_N \times \mathbb Z_N
 		\] 
 		%TODO supersingular ?
+		In cryptography, we work mostly on supersingular elliptic curves, which are curves that their
+		$p^n$-torsion are isomorphic to $\mathbb Z_{p^n}$.
 		\section{SIDH}
 
 
@@ -850,7 +853,7 @@
 			% Récupérer la forme matricielle ?
 			%TODO ajouter hypothèse sigma_0 rond omega cyclique
 			%TODO changer les E en E truc, changer $d$
-			\subsubsection{Computation of $d'$}
+			\subsubsection{Computing $d'$}
 			We prove here the following lemma
 			\begin{lemma}
 				The integer $d'$ computed line \ref{line:dprime} is the maximal integer $d'|d$ such that\[
@@ -1055,9 +1058,22 @@
 
 				\section{Conclusion}
 
-				
-				\todo{Conclusion}
 
+				This internship has been the occasion for me to get a deep understanding of the protocol FESTA
+				and the 
+				sophistaced attacks against this and against SIDH. Having a written algorithm makes the role of
+				every additionnal inputs clear and helps the research of "good" aditional inputs.
+				The encouraging thing is that the algorithm is really efficient in several specific situations
+				that don't depend on $\varphi$ which is encouraging.
+				
+				The situation looks like SIDH attack where we need to find a "good" isogeny (with the desired
+				degree) to use Kani's Lemma and recover the secret isogeny, there are a lot of details to take
+				into account when considering the search endomorphism, even with a fixed curve $E_0$.
+				The direct application to FESTA and it's CIST2 problem is also really intresting, a small
+				modification of this algorithm could lead to leak partial information about the first isogeny
+				$\varphi_1$ that may be combined with some of $\varphi_2$ in order to finally get at the end
+				the scaling matrix $\mathbf B$.
+				
 				\bibliographystyle{unsrt}
 				\bibliography{biblio}
 \end{document}
