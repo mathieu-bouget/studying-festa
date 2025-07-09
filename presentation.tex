@@ -1,0 +1,471 @@
+\documentclass[10pt]{beamer}
+
+%\usetheme{AnnArbor}
+\usepackage[dvipsnames]{xcolor}
+\usetheme{Bergen}
+\usecolortheme[named=purple]{structure}
+%\usecolortheme{monarca}
+\setbeamertemplate{navigation symbols}{}%\insertframenumber}
+\def\mcolor {ForestGreen}
+%\addtobeamertemplate{title page}{
+
+%}
+% Personnalisation de la barre latérale gauche
+%\setbeamersize{sidebar width left=20pt}
+%\setbeamersize{sidebar width left=default}
+%\setbeamertemplate{sidebar canvas left}[horizontal shading]
+%[left=purple,right=white]
+
+%\setbeamertemplate{sidebar canvas left}{TEST}
+%\setbeamertemplate{headline}{
+%	TEST
+%  \leavevmode%
+%  \hbox{%
+%    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1ex,leftskip=1em]{section in head/foot}
+%      \insertsection
+%    \end{beamercolorbox}%
+%  }
+%}
+
+%\setbeamersize{text margin left=0.5cm,text margin right=0.5cm}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage{pgfplots}
+%\usepackage{tikz}
+\usepackage{tikz-cd}
+%\usepackage{xcolor}
+%\usepgfplotslibrary{fillbetween}
+%\pgfplotsset{compat=1.18}
+%\usepackage{graphicx}
+
+%\usepackage [
+%n, % or lambda
+%advantage ,
+%operators ,
+%sets ,
+%adversary ,
+%landau ,
+%probability ,
+%notions ,
+%logic ,
+%ff ,
+%mm,
+%primitives ,
+%events ,
+%complexity ,
+%oracles ,
+%asymptotics ,
+%keys
+%]{cryptocode}
+\theoremstyle{plain}
+\newtheorem{proposition}[theorem]{\translate{Proposition}}
+\theoremstyle{example}
+\newtheorem{remark}[theorem]{\translate{Remark}}
+%\newtheorem{problem}[problem]{\translate{Problem}}
+
+\author{Mathieu \textsc{Bouget}}
+\title[Studying FESTA]{Studying encryption from supersingular torsion attacks}
+\institute{UMPA - Lyon,\\Benjamin Wesolowski,\\ Maria Corte-Real Santos}
+\date{July 10th}
+
+\begin{document}
+\frame[plain]{\titlepage}
+
+%TODO pourquoi SS ?
+%TODO show number slide
+\setcounter{framenumber}{0}
+\begin{frame}{$\insertframenumber -$Topic}
+
+	\begin{itemize}
+		\item Isogeny-based cryptography
+		\item 
+	Public encryption scheme FESTA proposed by Basso, Maino and Pope
+	in \cite{FESTA}	
+\item Security aspect
+	\end{itemize}
+\end{frame}
+%\frame[plain]{\tableofcontents}
+\section{Preliminaries}
+\begin{frame}{$\insertframenumber -$Elliptic curves}
+	\hfill\raisebox{-110pt}[0pt][0pt]{\makebox[0pt][r]{
+	%GRAPHIQUE
+	\includegraphics[width=4cm]{media/addition-2.png}
+}}
+\begin{itemize}
+	\item Let $a,b\in\mathbb F_{p^2}$ with $p \neq 2,3$
+	\item $4a^3+27b^2\neq 0$
+	\item $E:y^2 = x^3+ax+b$
+\end{itemize}
+\vspace{1cm}
+\begin{itemize}
+	\item $(P,Q)\in E^2\longmapsto P+Q\in E\quad$ (fast)
+	%\item $P+Q+R=0\iff  (P,Q,R) \text{ aligned}$
+	\item $(E,+,0)$ commutative group
+	%\item Computing $P+Q$ is fast
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$\insertframenumber -$Isogenies}
+\begin{itemize}
+	\item An isogeny is an algebraic morphism, ie \[
+			\varphi :(x,y)\in E_1\mapsto
+			\left(\frac{f_1(x,y)}{f_3(x,y)},\frac{f_2(x,y)}{f_3(x,y)}\right)\in E_2,
+			f_1,f_2,f_3\in\mathbb F[X,Y]
+	\] 
+	%with $f_1,f_2,f_3$ polynomials in $\mathbb F[X,Y]$
+\item with finite kernel $\ker\varphi$
+\end{itemize}
+\center\includegraphics[width=4cm]{media/dual-2.png}
+\begin{itemize}
+	\item $\varphi$ is a group morphism
+	\item isogenies are stable under composition
+	\item $\deg\varphi$ and $p$ coprime $\iff$  $\varphi$ separable $\iff$ $\deg\varphi =
+		\#\ker\varphi$
+	\item $\deg\varphi\circ\psi=\deg\varphi\deg\psi$
+	\item $\varphi:P\in E\mapsto \varphi(P)\in E'$ takes $O(\deg\varphi)$ operations in
+		general
+	\item Any isogeny $\phi:E\to E'$ admits a dual isogeny $\widehat\phi:E'\to E$
+	\item $\deg\widehat\phi=\deg\phi$
+%	\item $\deg\varphi$ is the size of the kernel when $\varphi$ is \textbf{separable}
+%	\item Given $\varphi:E_0\to E_1$ and $\psi:E_1\to E_2$ \begin{itemize}
+%			\item $\psi\circ\varphi:E_0\to E_2$ is an isogeny
+%			\item $\deg(\psi\circ\varphi)=\deg\varphi\deg\psi$
+%		\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$\insertframenumber -$$l$-isogeny graph}
+
+
+	Let $l$ be a small prime, and $\varphi_1,\dots,\varphi_n$ be $l$-isogenies.\\
+	%TODO ajouter figures avec voisins ?
+	%TODO figure du graphe
+
+	\begin{itemize}
+		\item Vertices : Elliptic curves
+		\item Edges : $l$-isogenies
+		\item $(l+1)$-regular graph
+	\end{itemize}
+	\begin{center}\includegraphics[width=7cm]{media/ln-iso-2.png}\end{center}
+	The isogeny $\varphi = \varphi_n\circ\dots\circ\varphi_1$ has degree $l^n$ but can be
+	computed in $O(nl)$ instead of $O(l^n)$.
+\uncover<2>{
+	\begin{problem}
+	Given $E_0,E_n$ and $l$, finding $\varphi$ should be difficult ! 
+	\end{problem}
+}
+	
+\end{frame}
+\begin{frame}{$\insertframenumber -$SIDH}
+	%\begin{itemize}
+	%	\item Public starting curve $E$
+	%	\item Alice generates $\varphi_A:E\to E_A$ and sends $E_A$ 
+	%	\item Bob generates $\varphi_B:E\to E_B$ and sends $E_B$
+	%	\item Alice computes $E_{AB}="\varphi_A(E_B)"$ 
+	%	\item Bob computes $E_{BA}="\varphi_B(E_A)"$ 
+	%\end{itemize}
+	\begin{itemize}
+		\item Public information : $E,E_A,E_B$
+		\item Alice secret : $\varphi_A$
+		\item Bob secret : $\varphi_B$
+		\item Alice and Bob combined secret $E_{AB} = "\varphi_A"(E_B) = "\varphi_B"(E_A)$
+	\end{itemize}
+	\begin{center}\includegraphics[width=5cm]{media/SIDH-2.png}\end{center}
+	\uncover<2>{
+		\alert{
+	%We need Bob to know $\varphi_A(\ker\varphi_B)$ and Alice to know
+	%$\varphi_B(\ker\varphi_A)$
+			Need torsion-point information :(
+}
+}
+\end{frame}
+
+%TODO bouger duale vers une slide avant en même temps qu'on parle du graphe de l iso
+
+\begin{frame}{$\insertframenumber -$$N$-torsion}
+		\begin{itemize}
+			\item $[N]_E:S\in E\longmapsto S+\dots+S\in E$ is an isogeny 
+			\item $E[N]=\ker([N]_E)$ is the $N$-torsion of $E$
+			\item when $N$ and $p$ are coprime, $E[N]\cong \mathbb Z_N\times\mathbb Z_N$
+		\end{itemize}	
+		\vspace{1cm}
+		If $P,Q$ is a basis of $E[N]$ and $S=[u]P + [v]Q$
+		\[
+			\varphi(S)=\varphi([u]P+[v]Q)=[u]\varphi(P)+[v]\varphi(Q)
+		\] 
+	%\begin{center}\includegraphics[width=5cm]{media/dual-2.png}\end{center}
+	% graphique ajouter boucle avec [N] 
+	%\begin{itemize}
+	%		\item $\widehat\varphi\circ\varphi = [\deg\varphi]_E$
+	%		\item $\varphi\circ\widehat\varphi = [\deg\varphi]_{E'}$
+	%	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{$\insertframenumber -$SIDH problem}
+
+	%\includegraphics[width=4.5cm]{media/FESTA-2.png}\\
+	\begin{itemize}
+		\item $d$ and $N$ smooth integers 
+		\item secret isogeny $\varphi:E_0\to E_1$ of degree $d$
+		\item P,Q a basis of the $N$-torsion of $E_0$
+		\item $S = \varphi(P)$ and  $T=\varphi(Q)$
+	\end{itemize}
+	\begin{problem}
+		Recover the secret isogeny $\varphi$ given curves $E_0,E_1$, points $P,Q,S,T$ and
+		integers $d,N$.
+	\end{problem}
+	\vspace{0.5cm}
+	\uncover<2>{\alert{Broken in polynomial time with a classic computer!}\\
+	There exists a generic algorithm when $N^2>d$}
+
+\end{frame}
+
+\begin{frame}{$\insertframenumber -$Computationally isogeny with Scaled-Torsion Problem (CIST)}
+	\begin{itemize}
+		\item $d$ and $N$ smooth integers
+		\item secret isogeny $\varphi:E_0\to E_1$ of degree $d$ 
+		\item $P,Q$ a basis of the $N$-torsion of $E_0$
+		\item diagonal matrix $\mathbf A$
+			\[
+			\begin{pmatrix} S \\ T \end{pmatrix} = \mathbf A \cdot\varphi
+			\begin{pmatrix} P \\ Q \end{pmatrix} = 
+			\begin{pmatrix} \lambda_1 & 0 \\ 0 & \lambda_2 \end{pmatrix} \cdot\varphi
+			\begin{pmatrix} P \\ Q \end{pmatrix} 
+			= \begin{pmatrix} [\lambda_1]\varphi(P) \\ [\lambda_2]\varphi(Q) \end{pmatrix} 
+			\] 
+	\end{itemize}
+	\begin{problem}
+		Recover the secret isogeny $\varphi$ given curves $E_0,E_1$, points $P,Q,S,T$, and
+		integers $d,N$.
+	\end{problem}
+\end{frame}
+%
+%\begin{frame}{$\insertframenumber -$FESTA}
+%	
+%	Setup : curve $E_0$ and basis $P,Q$ of the $N$-torsion of $E_0$
+%	\begin{itemize}
+%		\item Alice computes secret keys $\varphi_A:E_0\to E_A$ and a matrix $\mathbf A$ \\
+%		\item Alice computes the public key $(E_A,R_A,S_A)$ with
+%			 \[
+%			\begin{pmatrix} R_A \\ S_A \end{pmatrix} = \mathbf A\cdot\varphi_A
+%			\begin{pmatrix} P \\ Q \end{pmatrix} 
+%			\] 
+%	\end{itemize}
+%	\begin{itemize}
+%		\item Bob computes secret keys $\varphi_1:E_0\to E_1$, $\varphi_2:E_A\to E_2$ and
+%			matrix $\mathbf B$
+%		\item Bob computes the public key $(E_1,R_1,S_1,E_2,R_2,S_2)$
+%			\[
+%		\begin{pmatrix} R_1 \\ S_1 \end{pmatrix} = \mathbf B\cdot\varphi_1
+%		\begin{pmatrix} P \\ Q \end{pmatrix} \quad\quad
+%		\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} = \mathbf B\cdot\varphi_2
+%		\begin{pmatrix} R_A \\ S_A \end{pmatrix} 
+%			\]
+%	\end{itemize}
+%\end{frame}
+\begin{frame}{$\insertframenumber -$FESTA}
+	\hfill\raisebox{-40pt}[0pt][0pt]{\makebox[0pt][r]{
+	%GRAPHIQUE
+	\includegraphics[width=4.5cm]{media/FESTA-2.png}
+}}
+\begin{itemize}[<+->]
+%\item Public parameters :\begin{itemize}
+%		\item starting curve $E_0$
+%		\item integers $d_A,d_1,d_2,N$
+%		\item basis $P,Q$ of $E_0[N]$
+%\end{itemize}
+\item<1-> Trapdoor : $\varphi_A$ and matrix $\mathbf A$
+\item<2-> Public key : $E_A$ and $R_A,S_A$  \[
+			\begin{pmatrix} R_A \\ S_A \end{pmatrix} = \mathbf A\cdot\varphi_A
+			\begin{pmatrix} P \\ Q \end{pmatrix} 
+\] 
+
+
+
+\item<3-> Input : $\varphi_1$,$\varphi_2$ and matrix $\mathbf B$
+\item<4->	Output : curves $E_1,E_2$ and $R_1,S_1,R_2,S_2$  \[
+		\begin{pmatrix} R_1 \\ S_1 \end{pmatrix} = \mathbf B\cdot\varphi_1
+		\begin{pmatrix} P \\ Q \end{pmatrix}, \quad\quad
+		\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} = \mathbf B\cdot\varphi_2
+		\begin{pmatrix} R_A \\ S_A \end{pmatrix} 
+\] 
+
+\end{itemize}
+\begin{itemize}
+	\item<2-> Alice : $\textsc{Trapdoor} \longrightarrow \textsc{Public Key}$
+		\textcolor{ForestGreen}{(KeyGen)}
+	\item<4-> Bob : $\textsc{Input} + \textsc{Public key} \longrightarrow \textsc{Output}$
+		\textcolor{ForestGreen}{(Evaluation)}
+	\item<5-> Alice : $\textsc{Output} + \textsc{Trapdoor} \longrightarrow \textsc{Input}$
+		\textcolor{ForestGreen}{(Inversion)}
+	\item<6-> $\textsc{Public key} \longrightarrow \textsc{Trapdoor}$
+		\alert{(Hard)}
+	\item<7-> $\textsc{Output}  \longrightarrow \textsc{Input}$
+		\alert{(Hard)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$\insertframenumber -$FESTA Inversion (Alice)}
+%	\hfill\raisebox{-40pt}[0pt][0pt]{\makebox[0pt][r]{
+	%GRAPHIQUE
+%}}
+	\begin{center}	\includegraphics[width=4.5cm]{media/FESTA-2.png}\end{center}
+	%TODO ajouter l'iso complète
+	%TODO REFAIRE la slide
+We have, if $\mathbf A$ and $\mathbf B $ commute,
+	\begin{eqnarray*}
+		[d_1]\begin{pmatrix} R_2 \\ S_2 \end{pmatrix} &=&
+	\mathbf{B\cdot A\cdot B^{-1}}\cdot\varphi_2\circ\varphi_A\circ\widehat\varphi_1
+	\begin{pmatrix} R_1 \\ S_1 \end{pmatrix} \\
+																									&=& \mathbf A\cdot
+																									\varphi_2\circ\varphi_A\circ\widehat\varphi_1
+																									\begin{pmatrix} R_1 \\ S_1 \end{pmatrix}
+\end{eqnarray*}
+\begin{itemize}
+	\item Matrix $\mathbf A$ is in $\textsc{Trapdoor}$
+	\item We get an SIDH instance (no scaling) on isogeny
+$\varphi_2\circ\varphi_A\circ\widehat\varphi_1$ 
+	\item Using the attack against SIDH gives the isogeny
+$\varphi_2\circ\varphi_A\circ\widehat\varphi_1$ 
+\item Lead to recover $\textsc{Input}$ combined with the knowledge of $\varphi_A$
+\end{itemize}
+
+%	\begin{eqnarray*}
+%		\psi \begin{pmatrix} R_1 \\ S_1 \end{pmatrix} 
+%	& = & \psi \mathbf B\varphi_1 \begin{pmatrix} P \\ Q \end{pmatrix} 
+%	= \varphi_2\circ\varphi_A [d_1]\mathbf B \begin{pmatrix} P \\ Q \end{pmatrix} \\
+%	& = & %[d_1]\mathbf B\varphi_2\circ\mathbf{A^{-1}A}\varphi_A
+%	\begin{pmatrix} P \\ Q \end{pmatrix} %\\
+	 %= [d_1]\mathbf{BA^{-1}}\varphi_2\begin{pmatrix} R_A \\ S_A \end{pmatrix} 
+
+%	\end{eqnarray*}
+	%\includegraphics[width=4.5cm]{media/FESTA-2.png}
+	
+\end{frame}
+
+\begin{frame}{$\insertframenumber -$Computationally isogeny with double Scaled-Torsion Problem (CIST2)}
+	\begin{itemize}
+		\item $d$,\textcolor{\mcolor}{$d'$} and $N$ smooth integers
+		\item secret isogeny $\varphi:E_0\to E_1$ of degree $d$ 
+		\item \textcolor{\mcolor}{secret isogeny $\varphi':E_0'\to E_1'$ of degree $d'$}
+		\item $P,Q$ a basis of the $N$-torsion of $E_0$
+		\item \textcolor{\mcolor}{$P',Q'$ a basis of the $N$-torsion of $E_0'$}
+		\item diagonal matrix $\mathbf A$
+			\[
+			\begin{pmatrix} S \\ T \end{pmatrix} = \mathbf A \cdot\varphi
+			\begin{pmatrix} P \\ Q \end{pmatrix}, 
+			\quad
+			\textcolor{\mcolor}{
+			\begin{pmatrix} S' \\ T' \end{pmatrix} = \mathbf A \cdot\varphi'
+			\begin{pmatrix} P \\ Q \end{pmatrix} 
+		}
+			\] 
+	\end{itemize}
+	\begin{problem}
+		Recover the secret isogenies $\varphi$ and \textcolor{\mcolor}{$\varphi'$} given
+		curves $E_0,E_1,\textcolor{\mcolor}{E_0',E_1'}$, points
+		$P,Q,S,T,\textcolor{\mcolor}{P',Q'S',T'}$, and integers
+		$d,\textcolor{\mcolor}{d'},N$.
+	\end{problem}
+\end{frame}
+
+\section{Attack}
+
+\begin{frame}{$\insertframenumber -$Problems}
+
+	\begin{itemize}
+		\item SIDH problem : Finding $\varphi:E_0\to E_1$ given  $E_0,E_1$ and
+			$\varphi(P),\varphi(Q)$
+			\textcolor{\mcolor}{too easy}
+		\item CIST2 :Finding $\varphi,\varphi'$ given curves and scaled torsion point with the
+			same matrix
+		\item CIST : Finding $\varphi:E_0\to E_1$ fiven $E_0,E_1$ and
+			$\lambda_1\varphi(P),\lambda_2\varphi(Q)$ 
+		\item Isogeny problem : Finding $\varphi:E_0\to E_1$ given  $E_0,E_1$ \alert{too hard}
+	\end{itemize}
+
+
+\end{frame}
+%TODO slide, CIST, CIST2 into FESTA
+%\begin{frame}{$\insertframenumber -$Strategy}
+%	\begin{center}\includegraphics[width=4.5cm]{media/FESTA-2.png}\end{center}
+%	We want to solve the following problem :
+%\begin{itemize}
+%	\item $\textsc{Output} + \textsc{Public Key} \longrightarrow \textsc{Input}$ 
+%\end{itemize}
+%	If CIST is hard, it reduces to the two folling problems
+%\begin{itemize}
+%	\item $\textsc{Public Key} \longrightarrow \textsc{Trapdoor}$ : CIST \\
+%	\item $\textsc{Output} \longrightarrow \textsc{Input}$ : CIST2 
+%\end{itemize}	
+%
+%If an attack against CIST leaks relevant partial information for some instances, the
+%previous reduction does not hold.
+%
+%%The hardness of CIST depends on starting curve $E_0$ and pubic parameters, there may be
+%%situations where the public keys could leak relevant partial information on the trapdoor.
+%
+%\uncover<2>{\alert{$\rightarrow$ Motivates studying attacks against CIST}}
+%
+%%There exists recent work on the CIST problem \cite{polyCIST}
+%\end{frame}
+%\begin{frame}{$\insertframenumber -$Goals}
+%	\begin{itemize}
+%		\item 
+%	Understand the lollipop attack and its upgraded version introduced by
+%	Castryck and Vercauteren in \cite{polyCIST}. % TODO noms propres
+%
+%\item Get an effective algorithm that implements the attack with a clear statement on
+%	correctness and running time.
+%	\end{itemize}
+%\end{frame}
+\begin{frame}{$\insertframenumber -$Lollipop endomorphism}
+	\hfill\raisebox{-100pt}[0pt][0pt]{\makebox[0pt][r]{
+	%GRAPHIQUE
+	\includegraphics[width=3cm]{media/lollipop-2.png}
+}}
+\begin{itemize}
+	\item Inputs of the attack : $E,E'$
+		\\$P,Q\in E[N]$
+		$S,T\in E'[N]$
+		\[
+		\begin{pmatrix} S \\ T \end{pmatrix} =\mathbf A\cdot\varphi\begin{pmatrix} P \\ Q
+	\end{pmatrix} 
+	\quad\quad\quad\quad\quad
+		\] 
+\end{itemize}
+\begin{enumerate}
+		\item<2-> Find endomorphism $\omega$ and matrix $\mathbf M$
+			\[
+			\omega \begin{pmatrix} P \\ Q \end{pmatrix} = \mathbf M
+			\begin{pmatrix} P \\ Q \end{pmatrix} 
+			\] 
+		\item<3-> Learn isogeny $\psi = \varphi\circ\omega\circ\widehat\varphi$	
+			\[
+				\psi\begin{pmatrix} S \\ T \end{pmatrix} = [\deg\varphi]\mathbf M
+				\begin{pmatrix} S \\ T \end{pmatrix} 
+			\] 
+		\item<4-> Recover $\psi$ with SIDH attack \[
+		N^2 > \deg\psi = \deg\varphi\deg\omega\deg\widehat\varphi = d^2\deg\omega
+		\] 
+		\item<5-> Recover $\varphi$ from $\psi$
+	\end{enumerate}
+\end{frame}
+
+%TODO plus de slides la dessus…
+\begin{frame}{$\insertframenumber -$Upgraded lollipop}
+%TODO image
+\end{frame}
+\begin{frame}{$\insertframenumber -$Recovering $\varphi$ from $\psi$}
+\end{frame}
+\begin{frame}{$\insertframenumber -$Conclusion}
+		
+\end{frame}
+\begin{frame}{$\insertframenumber -$References}
+				\bibliographystyle{unsrt}
+				%\bibliographystyle{amsalpha}
+				\bibliography{biblio}
+\end{frame}
+\end{document}
